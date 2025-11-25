@@ -476,6 +476,7 @@ GameObject:
   - component: {fileID: 113711422}
   - component: {fileID: 113711421}
   - component: {fileID: 113711420}
+  - component: {fileID: 113711425}
   m_Layer: 0
   m_Name: '[BuildingBlock] Camera Rig'
   m_TagString: Untagged
@@ -639,6 +640,22 @@ Transform:
   - {fileID: 1147859995}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &113711425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 113711419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 244574f5529f8124ca8f82950d799859, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandPinchLocomotionBB
+  rightHand: {fileID: 288585470}
+  handDirection: {fileID: 1861797479}
+  moveSpeed: 1.5
+  invert: 0
 --- !u!1001 &124283087
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -972,6 +989,17 @@ MonoBehaviour:
   _movementProvider: {fileID: 0}
   _handAligment: 0
   _handGrabPoses: []
+--- !u!114 &288585470 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3823946674013047011, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+  m_PrefabInstance: {fileID: 1147859994}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b14164f8f23faae4293baeb84485b3d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &318048786
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2086,6 +2114,72 @@ MonoBehaviour:
   _selectSurface: {fileID: 0}
   _movementProvider: {fileID: 605175058}
   _tiebreakerScore: 0
+--- !u!1 &622598560
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 622598562}
+  - component: {fileID: 622598561}
+  m_Layer: 0
+  m_Name: HandGuidedPlacement
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &622598561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622598560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 271f33d65f207174f9c846f2014dac3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandGuidedPlacement
+  hand: {fileID: 1185409640}
+  FX_Fire_03: {fileID: 0}
+  placeInteractionType: 1
+  grabInteractionType: 9
+  spawnDistance: 0.3
+  rayDistance: 5
+  cubeSpeed: 2
+  collisionCheckDistance: 0.2
+  raycastLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  grabSpeed: 3
+  swipeThreshold: 0.2
+  swipeTime: 0.15
+  throwForceMultiplier: 5
+  allPinchThreshold: 0.7
+  openHandThreshold: 0.08
+  indexClosedMin: 0.1
+  middleClosedMin: 0.1
+  ringClosedMin: 0.1
+  pinkyClosedMin: 0.1
+  showDebugValues: 0
+--- !u!4 &622598562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622598560}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -1.07}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &665332888
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7889,3 +7983,4 @@ SceneRoots:
   - {fileID: 368081506}
   - {fileID: 810665332}
   - {fileID: 1142829954}
+  - {fileID: 622598562}
