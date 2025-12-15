@@ -21,6 +21,10 @@ public class FireBallTrigger : MonoBehaviour
     [Header("Debug")]
     public bool showDebugInfo = false;
 
+    // État de la torche
+    private bool isLit = false;
+    public bool IsLit { get { return isLit; } }
+
     private void Start()
     {
         // Si aucun particle system n'est assigné, chercher dans les enfants
@@ -159,6 +163,14 @@ public class FireBallTrigger : MonoBehaviour
                 Debug.Log($"[FireBallTrigger] Light activée: {targetLight.name}");
             }
         }
+
+        // Marquer comme allumé
+        isLit = true;
+
+        if (showDebugInfo)
+        {
+            Debug.Log($"[FireBallTrigger] Torche allumée!");
+        }
     }
 
     // Méthode publique pour désactiver le particle system si besoin
@@ -183,6 +195,14 @@ public class FireBallTrigger : MonoBehaviour
             {
                 Debug.Log($"[FireBallTrigger] Light désactivée: {targetLight.name}");
             }
+        }
+
+        // Marquer comme éteint
+        isLit = false;
+
+        if (showDebugInfo)
+        {
+            Debug.Log($"[FireBallTrigger] Torche éteinte!");
         }
     }
 }
