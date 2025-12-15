@@ -725,7 +725,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HandPinchLocomotionBB
   rightHand: {fileID: 288585470}
-  handDirection: {fileID: 1861797479}
+  handDirection: {fileID: 1385422212}
   moveSpeed: 1.5
   invert: 0
 --- !u!1001 &124283087
@@ -6226,6 +6226,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 668735768885291391, guid: 91ad7bf144749b04ab484a680630a040, type: 3}
   m_PrefabInstance: {fileID: 1375377535}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1385422212 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 357381210882572042, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+  m_PrefabInstance: {fileID: 1147859994}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1387474446
 PrefabInstance:
