@@ -7862,7 +7862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aa84516048250e46907233a4ea451e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorController
-  doorObject: {fileID: 1037726602}
+  doorObject: {fileID: 0}
 --- !u!65 &1746061356
 BoxCollider:
   m_ObjectHideFlags: 0
