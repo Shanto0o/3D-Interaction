@@ -1536,7 +1536,7 @@ MonoBehaviour:
   hand: {fileID: 753761101}
   fireBallPrefab: {fileID: 2972392977303283611, guid: 11c9a5d587e034e43a68d4ebfb901206, type: 3}
   voice: {fileID: 1149402609}
-  gestureType: 0
+  gestureType: 1
   chargeTime: 3
   launchForce: 15
   openHandThreshold: 0.08
@@ -4352,11 +4352,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FourTorchPuzzle
   torches:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  targetAnimator: {fileID: 0}
+  - {fileID: 663882159}
+  - {fileID: 1444225907}
+  - {fileID: 1146017513}
+  - {fileID: 1936743738}
+  targetAnimator: {fileID: 1037726603}
   animationTriggerName: Open
   showDebugInfo: 0
 --- !u!1001 &1038278407
