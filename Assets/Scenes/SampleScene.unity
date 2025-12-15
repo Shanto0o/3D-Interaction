@@ -2668,7 +2668,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1716688340}
     m_Modifications:
     - target: {fileID: 709126806884448601, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -2684,23 +2684,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.42367446
+      value: 0.4236745
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.42367446
+      value: 0.4236745
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.5574352
+      value: 0.21243513
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.556
+      value: 1.1159999
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.9235876
+      value: 4.3305874
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2756,6 +2756,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AztechGames.Rotate
   speed: 10
+--- !u!4 &674997022 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
+  m_PrefabInstance: {fileID: 674997019}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &692862576
 GameObject:
   m_ObjectHideFlags: 0
@@ -2983,7 +2988,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1716688340}
     m_Modifications:
     - target: {fileID: 709126806884448601, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -2995,27 +3000,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.42367446
+      value: 0.4236744
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.42367446
+      value: 0.4236745
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.42367446
+      value: 0.42367443
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.21802244
+      value: -1.1269776
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.542596
+      value: 1.102596
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.1356297
+      value: -1.7286297
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3071,6 +3076,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AztechGames.Rotate
   speed: 10
+--- !u!4 &742990094 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
+  m_PrefabInstance: {fileID: 742990091}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &753761094
 GameObject:
   m_ObjectHideFlags: 0
@@ -4116,7 +4126,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1716688340}
     m_Modifications:
     - target: {fileID: 709126806884448601, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -4136,19 +4146,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.42367446
+      value: 0.4236745
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.2109835
+      value: 1.8659835
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.545
+      value: 1.105
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.36861953
+      value: 1.0383804
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -4204,6 +4214,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AztechGames.Rotate
   speed: 10
+--- !u!4 &1067902205 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
+  m_PrefabInstance: {fileID: 1067902202}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1083643291
 GameObject:
   m_ObjectHideFlags: 0
@@ -7585,6 +7600,10 @@ Transform:
   - {fileID: 368081507}
   - {fileID: 810665333}
   - {fileID: 1142829955}
+  - {fileID: 1753216150}
+  - {fileID: 674997022}
+  - {fileID: 742990094}
+  - {fileID: 1067902205}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1732811019
@@ -7779,7 +7798,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1716688340}
     m_Modifications:
     - target: {fileID: 709126806884448601, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -7791,11 +7810,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.42367446
+      value: 0.4236745
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.42367446
+      value: 0.42367452
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalScale.z
@@ -7803,15 +7822,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.8525941
+      value: -4.197594
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.5704314
+      value: 1.1304314
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.36394855
+      value: 1.0430514
       objectReference: {fileID: 0}
     - target: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -7867,6 +7886,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AztechGames.Rotate
   speed: 10
+--- !u!4 &1753216150 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6245955952491219320, guid: 551d6390020dd634fabefde9ddbe24c6, type: 3}
+  m_PrefabInstance: {fileID: 1753216147}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1764211095
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9462,7 +9486,3 @@ SceneRoots:
   - {fileID: 342555818}
   - {fileID: 162100458}
   - {fileID: 622598562}
-  - {fileID: 1753216147}
-  - {fileID: 674997019}
-  - {fileID: 742990091}
-  - {fileID: 1067902202}
