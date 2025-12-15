@@ -235,6 +235,14 @@ public class BouleDeFeu : MonoBehaviour
             rb.isKinematic = true;
             rb.useGravity = false;
 
+            // Ajouter un SphereCollider pour la détection
+            SphereCollider collider = chargingFireBall.AddComponent<SphereCollider>();
+            collider.radius = 0.15f; // Ajuster selon la taille de la boule
+
+            // Ajouter le tag de couleur
+            FireBallColorTag colorTag = chargingFireBall.AddComponent<FireBallColorTag>();
+            colorTag.color = currentFireColor;
+
             // Instancier le ParticleSystem comme enfant
             ParticleSystem ps = Instantiate(fireBallPrefab, chargingFireBall.transform);
             ps.transform.localPosition = Vector3.zero;
@@ -318,6 +326,14 @@ public class BouleDeFeu : MonoBehaviour
 
             // Ajouter le Rigidbody
             fireBall.AddComponent<Rigidbody>();
+
+            // Ajouter un SphereCollider pour la détection
+            SphereCollider collider = fireBall.AddComponent<SphereCollider>();
+            collider.radius = 0.15f; // Ajuster selon la taille de la boule
+
+            // Ajouter le tag de couleur
+            FireBallColorTag colorTag = fireBall.AddComponent<FireBallColorTag>();
+            colorTag.color = currentFireColor;
 
             // Instancier le ParticleSystem comme enfant
             ParticleSystem ps = Instantiate(fireBallPrefab, fireBall.transform);
@@ -419,6 +435,17 @@ public class BouleDeFeu : MonoBehaviour
                 if (showDebugInfo)
                 {
                     Debug.Log("Couleur appliquée à la boule de feu en cours");
+                }
+            }
+
+            // Mettre à jour le tag de couleur aussi
+            FireBallColorTag colorTag = chargingFireBall.GetComponent<FireBallColorTag>();
+            if (colorTag != null)
+            {
+                colorTag.color = currentFireColor;
+                if (showDebugInfo)
+                {
+                    Debug.Log($"Tag de couleur mis à jour : {currentFireColor}");
                 }
             }
         }
