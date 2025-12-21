@@ -45,7 +45,10 @@ public class DoorController : MonoBehaviour
     // Ouvrir quand le joueur entre dans la zone
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Trigger entered by: " + other.gameObject.name);
-        OpenDoor();
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Trigger entered by: " + other.gameObject.name);
+            OpenDoor();
+        }
     }
 }
