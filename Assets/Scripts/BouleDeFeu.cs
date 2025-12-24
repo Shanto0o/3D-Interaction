@@ -150,7 +150,7 @@ public class BouleDeFeu : MonoBehaviour
         bool handOpen = CheckOpenHand();
 
         // Détecter l'orientation de la main (paume vers le haut ou vers le bas)
-        float palmOrientation = -hand.transform.up.y;
+        float palmOrientation = -hand.transform.up.x;
         bool palmUp = palmOrientation > palmUpThreshold;
         bool palmDown = palmOrientation < palmDownThreshold;
 

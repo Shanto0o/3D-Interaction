@@ -4051,6 +4051,59 @@ Transform:
   - {fileID: 1114826604}
   m_Father: {fileID: 1167598748}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1341053117
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1341053119}
+  - component: {fileID: 1341053120}
+  m_Layer: 0
+  m_Name: LumiereSpell
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1341053119
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1341053117}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.62715, y: 1.65741, z: -0.99754}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1341053120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1341053117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c1066f7e803af44f921d66ec8754c8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LumiereSpell
+  hand: {fileID: 1114826610}
+  lightParticlePrefab: {fileID: 9218052186624577384, guid: 8eaccfb5780226b4fbe782021fa93faf, type: 3}
+  voice: {fileID: 91644375}
+  fingerClosedThreshold: 0.1
+  indexOpenThreshold: 0.5
+  upAlignmentThreshold: 0.3
+  lightDuration: 10
+  distanceFromFinger: 0.05
+  showDebugInfo: 1
 --- !u!1001 &1341059150
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4961,7 +5014,7 @@ Transform:
   m_GameObject: {fileID: 1602402010}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1.32, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6567,3 +6620,4 @@ SceneRoots:
   - {fileID: 1602402016}
   - {fileID: 1847608430}
   - {fileID: 755663893}
+  - {fileID: 1341053119}
