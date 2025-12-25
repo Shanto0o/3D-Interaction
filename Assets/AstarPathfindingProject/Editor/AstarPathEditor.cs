@@ -948,7 +948,7 @@ namespace Pathfinding {
 
 		/// <summary>Opens the A* Inspector and shows the section for editing tags</summary>
 		public static void EditTags () {
-			AstarPath astar = GameObject.FindFirstObjectByType<AstarPath>();
+			AstarPath astar = GameObject.FindObjectOfType<AstarPath>();
 
 			if (astar != null) {
 				editTags = true;
@@ -1365,7 +1365,7 @@ namespace Pathfinding {
 		[MenuItem("Edit/Pathfinding/Scan All Graphs %&s")]
 		public static void MenuScan () {
 			if (AstarPath.active == null) {
-				AstarPath.active = FindFirstObjectByType<AstarPath>();
+				AstarPath.active = FindObjectOfType<AstarPath>();
 				if (AstarPath.active == null) {
 					return;
 				}
