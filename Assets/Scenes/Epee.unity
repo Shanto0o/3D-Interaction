@@ -6066,6 +6066,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7218948594749983592, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+      propertyPath: _layerMask.m_Bits
+      value: 31
+      objectReference: {fileID: 0}
     - target: {fileID: 7238488532558302161, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: m_Layer
       value: 1
@@ -7669,6 +7673,22 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4456945836126217348, guid: 3c69fa93618176a43962f23c5526778b, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4456945836126217348, guid: 3c69fa93618176a43962f23c5526778b, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4456945836126217348, guid: 3c69fa93618176a43962f23c5526778b, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4456945836126217348, guid: 3c69fa93618176a43962f23c5526778b, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 863174fbef875425ca78e4c949f12318, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -7717,7 +7737,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a660f1e64aa35214d8b4f02e31faafa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwordGrabInteraction
-  rightHand: {fileID: 277945916}
+  rightHand: {fileID: 1114826610}
   grabZoneRadius: 4
   chargeTime: 2
   openHandThreshold: 0.15

@@ -37,6 +37,7 @@ public class LumiereSpell : MonoBehaviour
     private float recordingStartTime = 0f;
     
     private bool wasPinching = false; // Pour détecter le début du pinch
+    private bool isLightActive = false; // Indique si la lumière est actuellement active
 
     void Start()
     {
@@ -86,15 +87,38 @@ public class LumiereSpell : MonoBehaviour
         }
 
         // Si on est en train de pincer et qu'on a reçu la commande vocale "lumière"
-        if (isPinching && isVoiceCommandReceived)
+        if (isPinching && isVoiceCommandReceived && !isLightActive)
         {
             CreateLight();
             isVoiceCommandReceived = false; // Reset pour la prochaine fois
+            isLightActive = true;
         }
 
-        // Fin du pinch - DÉSACTIVER LA VOIX
+        // Maintenir la lumière active tant que le pinch est maintenu
+        if (isPinching && isLightActive && currentLight != null)
+        {
+            // La lumière reste attachée au doigt et active
+            if (showDebugInfo && Time.frameCount % 60 == 0)
+            {
+                Debug.Log("Light is active and following finger.");
+            }
+        }
+
+        // Fin du pinch - DÉSACTIVER LA VOIX ET ÉTEINDRE LA LUMIÈRE
         if (!isPinching && wasPinching)
         {
+            // Éteindre la lumière quand on relâche le pinch
+            if (currentLight != null)
+            {
+                Destroy(currentLight);
+                currentLight = null;
+                isLightActive = false;
+                if (showDebugInfo)
+                {
+                    Debug.Log("Light destroyed - pinch released.");
+                }
+            }
+            
             // Désactiver l'écoute vocale quand on arrête de pincer
             if (voice != null && isListening)
             {
@@ -154,8 +178,8 @@ public class LumiereSpell : MonoBehaviour
         ps.transform.localPosition = Vector3.up * distanceFromFinger;
         ps.transform.localRotation = Quaternion.identity;
 
-        // Détruire après la durée spécifiée
-        Destroy(ps.gameObject, lightDuration);
+        // NE PAS détruire automatiquement - la lumière reste active tant que le pinch est maintenu
+        // Elle sera détruite manuellement quand le pinch sera relâché
 
         // Stocker la référence à la lumière actuelle
         if (currentLight != null)
