@@ -32,9 +32,11 @@ public class LumiereSpell : MonoBehaviour
     private bool isVoiceCommandReceived = false;
     private GameObject currentLight;
 
-    private bool isVoiceActive = false;
-    private float voiceCooldown = 0f;
-    private const float VOICE_COOLDOWN_TIME = 1f;
+    private bool isListening = false;
+    private float minRecordingTime = 0.5f; // Temps minimum avant de pouvoir arrêter l'enregistrement
+    private float recordingStartTime = 0f;
+    
+    private bool wasPinching = false; // Pour détecter le début du pinch
 
     void Start()
     {
@@ -59,85 +61,67 @@ public class LumiereSpell : MonoBehaviour
             return;
         }
 
-        // Gestion de l'activation continue de la voix
-        if (voice != null)
-        {
-            if (voiceCooldown > 0f)
-            {
-                voiceCooldown -= Time.deltaTime;
-            }
-
-            if (!isVoiceActive && voiceCooldown <= 0f)
-            {
-                voice.Activate();
-                isVoiceActive = true;
-                if (showDebugInfo)
-                {
-                    Debug.Log("Voice activated - listening...");
-                }
-            }
-        }
-
-        // Vérifier le geste : index levé, autres doigts fermés
+        // Vérifier le geste : pinch de l'index
         UpdateGesture();
     }
 
     void UpdateGesture()
     {
-        bool indexPointing = CheckIndexPointingUp();
+        bool isPinching = hand.GetFingerIsPinching(OVRHand.HandFinger.Index);
 
-        // Détection du début du geste
-        if (indexPointing && !wasIndexPointingUp)
+        // Détection du début du pinch - ACTIVER LA VOIX
+        if (isPinching && !wasPinching)
         {
-            isIndexPointingUp = true;
-            if (showDebugInfo)
+            // Activer l'écoute vocale quand on commence à pincer
+            if (voice != null && !isListening)
             {
-                Debug.Log("Index pointing up detected!");
+                voice.Activate();
+                isListening = true;
+                recordingStartTime = Time.time;
+                if (showDebugInfo)
+                {
+                    Debug.Log("Index pinch started! Voice activated.");
+                }
             }
         }
 
-        // Si le geste est actif et qu'on a reçu la commande vocale "lumière"
-        if (isIndexPointingUp && isVoiceCommandReceived)
+        // Si on est en train de pincer et qu'on a reçu la commande vocale "lumière"
+        if (isPinching && isVoiceCommandReceived)
         {
             CreateLight();
             isVoiceCommandReceived = false; // Reset pour la prochaine fois
         }
 
-        // Fin du geste
-        if (!indexPointing && wasIndexPointingUp)
+        // Fin du pinch - DÉSACTIVER LA VOIX
+        if (!isPinching && wasPinching)
         {
-            isIndexPointingUp = false;
-            if (showDebugInfo)
+            // Désactiver l'écoute vocale quand on arrête de pincer
+            if (voice != null && isListening)
             {
-                Debug.Log("Index pointing gesture ended");
+                float recordingDuration = Time.time - recordingStartTime;
+                if (recordingDuration >= minRecordingTime)
+                {
+                    voice.Deactivate();
+                    isListening = false;
+                    if (showDebugInfo)
+                    {
+                        Debug.Log($"Index pinch ended. Voice deactivated (recorded for {recordingDuration:F2}s).");
+                    }
+                }
+                else
+                {
+                    // Si pas assez de temps, on annule simplement
+                    voice.Deactivate();
+                    isListening = false;
+                    if (showDebugInfo)
+                    {
+                        Debug.Log($"Recording too short ({recordingDuration:F2}s), cancelled.");
+                    }
+                }
             }
         }
 
-        wasIndexPointingUp = indexPointing;
-    }
-
-    bool CheckIndexPointingUp()
-    {
-        // L'index doit être ouvert (pas pincé)
-        bool indexOpen = hand.GetFingerPinchStrength(OVRHand.HandFinger.Index) < indexOpenThreshold;
-
-        // Les autres doigts doivent être fermés (le pinky est optionnel car difficile à tracker)
-        bool middleClosed = hand.GetFingerPinchStrength(OVRHand.HandFinger.Middle) > fingerClosedThreshold;
-        bool ringClosed = hand.GetFingerPinchStrength(OVRHand.HandFinger.Ring) > fingerClosedThreshold;
-        // Le pinky est optionnel - on vérifie s'il est au moins partiellement fermé
-        float pinkyStrength = hand.GetFingerPinchStrength(OVRHand.HandFinger.Pinky);
-        bool pinkyOk = pinkyStrength > 0.05f; // Très permissif pour le pinky
-
-
-        bool gestureDetected = indexOpen && middleClosed && ringClosed && pinkyOk;
-
-        if (showDebugInfo && Time.frameCount % 30 == 0)
-        {
-            float pinkyStrength2 = hand.GetFingerPinchStrength(OVRHand.HandFinger.Pinky);
-            Debug.Log($"Index Open: {indexOpen} | Middle: {middleClosed} | Ring: {ringClosed} | Pinky: {pinkyOk} (strength: {pinkyStrength2:F2}) | Gesture: {gestureDetected}");
-        }
-
-        return gestureDetected;
+        wasPinching = isPinching;
     }
 
     void CreateLight()
@@ -209,9 +193,6 @@ public class LumiereSpell : MonoBehaviour
         string text = response["text"];
         Debug.Log($"Heard: {text}");
 
-        isVoiceActive = false;
-        voiceCooldown = VOICE_COOLDOWN_TIME;
-
         if (string.IsNullOrEmpty(text)) return;
 
         text = text.ToLower();
@@ -230,8 +211,7 @@ public class LumiereSpell : MonoBehaviour
     private void OnVoiceError(string error, string message)
     {
         Debug.LogError($"Voice Error: {error} - {message}");
-        isVoiceActive = false;
-        voiceCooldown = VOICE_COOLDOWN_TIME;
+        isListening = false;
     }
 
     private void OnPartialTranscription(string text)
