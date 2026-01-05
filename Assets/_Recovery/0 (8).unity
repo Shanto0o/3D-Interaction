@@ -376,6 +376,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 95905205}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &95905205
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -728,6 +729,7 @@ MonoBehaviour:
   handDirection: {fileID: 1385422212}
   moveSpeed: 1.5
   invert: 0
+  playerLocomotor: {fileID: 0}
 --- !u!1001 &124283087
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1566,6 +1568,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 342678622}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &342678622
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4542,6 +4545,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1137760005}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &1137760005
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4721,6 +4725,10 @@ PrefabInstance:
       propertyPath: _centerEyeCamera
       value: 
       objectReference: {fileID: 1861797480}
+    - target: {fileID: 702507761490558278, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     - target: {fileID: 2336446269904782542, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: _leftEyeAnchor
       value: 
@@ -4733,6 +4741,10 @@ PrefabInstance:
       propertyPath: _centerEyeCamera
       value: 
       objectReference: {fileID: 1861797480}
+    - target: {fileID: 3469981918431717162, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
     - target: {fileID: 4148778239110795873, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: m_Name
       value: '[BuildingBlock] OVRInteractionComprehensive'
@@ -4785,10 +4797,18 @@ PrefabInstance:
       propertyPath: _playerOrigin
       value: 
       objectReference: {fileID: 113711424}
+    - target: {fileID: 6064490830173670506, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     - target: {fileID: 6267690530596161800, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
       propertyPath: _ovrCameraRig
       value: 
       objectReference: {fileID: 113711422}
+    - target: {fileID: 7904225791563683334, guid: 0a7d2469f24041c4284c66706f84c45e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6358,6 +6378,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1387474450}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &1387474450
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6579,6 +6600,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1445484011}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &1445484011
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6971,6 +6993,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1520064941}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &1520064941
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7577,6 +7600,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1684152286}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &1684152286
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8491,6 +8515,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1815958762}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &1815958762
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9298,6 +9323,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 1950897706}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &1950897706
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -9680,6 +9706,7 @@ MonoBehaviour:
   _rigidbody: {fileID: 2008012207}
   _kinematicWhileSelected: 1
   _throwWhenUnselected: 1
+  _forceKinematicDisabled: 0
 --- !u!54 &2008012207
 Rigidbody:
   m_ObjectHideFlags: 0
