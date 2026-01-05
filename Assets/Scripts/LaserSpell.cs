@@ -1,10 +1,20 @@
 using UnityEngine;
 
+public enum LaserGestureType
+{
+    Pinch,
+    Triangle
+}
+
 public class TriangleLaser : MonoBehaviour
 {
     [Header("Hand References")]
     public OVRHand leftHand;
     public OVRHand rightHand;
+
+    [Header("Gesture Type")]
+    public LaserGestureType gestureType = LaserGestureType.Triangle;
+    public OVRHand pinchHand; // Main utilisée pour le pinch (peut être left ou right)
 
     [Header("Laser Settings")]
     public ParticleSystem laserPrefab; // explosion_light
@@ -27,6 +37,7 @@ public class TriangleLaser : MonoBehaviour
     private ParticleSystem laserEffect;
     private LineRenderer laserBeam;
     private Vector3 triangleCenter;
+    private bool wasPinching = false;
 
     void Start()
     {
@@ -45,27 +56,65 @@ public class TriangleLaser : MonoBehaviour
 
     void Update()
     {
-        if (leftHand == null || rightHand == null)
+        if (gestureType == LaserGestureType.Triangle)
         {
-            Debug.LogWarning("Left or Right hand not assigned!");
-            return;
+            if (leftHand == null || rightHand == null)
+            {
+                Debug.LogWarning("Left or Right hand not assigned!");
+                return;
+            }
+
+            bool shouldActivateLaser = CheckTriangleGesture();
+
+            if (shouldActivateLaser && !isLaserActive)
+            {
+                ActivateLaser();
+            }
+            else if (!shouldActivateLaser && isLaserActive)
+            {
+                DeactivateLaser();
+            }
+
+            if (isLaserActive)
+            {
+                UpdateLaser();
+            }
         }
+        else if (gestureType == LaserGestureType.Pinch)
+        {
+            if (pinchHand == null)
+            {
+                Debug.LogWarning("Pinch hand not assigned!");
+                return;
+            }
 
-        bool shouldActivateLaser = CheckTriangleGesture();
+            UpdatePinchGesture();
+        }
+    }
 
-        if (shouldActivateLaser && !isLaserActive)
+    void UpdatePinchGesture()
+    {
+        bool pinchActive = pinchHand.GetFingerIsPinching(OVRHand.HandFinger.Index);
+
+        // Début du pinch - active le laser
+        if (pinchActive && !wasPinching)
         {
             ActivateLaser();
         }
-        else if (!shouldActivateLaser && isLaserActive)
+
+        // Pendant le pinch - met à jour le laser
+        if (pinchActive && isLaserActive)
+        {
+            UpdateLaserPinch();
+        }
+
+        // Fin du pinch - désactive le laser
+        if (!pinchActive && wasPinching)
         {
             DeactivateLaser();
         }
 
-        if (isLaserActive)
-        {
-            UpdateLaser();
-        }
+        wasPinching = pinchActive;
     }
 
     bool CheckTriangleGesture()
@@ -174,11 +223,16 @@ public class TriangleLaser : MonoBehaviour
     {
         isLaserActive = true;
 
-        // Créer l'objet laser au centre du triangle
+        // Déterminer la position initiale selon le type de geste
+        Vector3 initialPosition = (gestureType == LaserGestureType.Triangle) 
+            ? triangleCenter 
+            : pinchHand.transform.position + pinchHand.transform.forward * 0.05f;
+
+        // Créer l'objet laser
         if (laserPrefab != null)
         {
             laserObject = new GameObject("TriangleLaser");
-            laserObject.transform.position = triangleCenter;
+            laserObject.transform.position = initialPosition;
 
             // Instancier l'effet de particules
             laserEffect = Instantiate(laserPrefab, laserObject.transform);
@@ -239,6 +293,37 @@ public class TriangleLaser : MonoBehaviour
             laserEnd = hit.point;
 
             // Optionnel: ajouter un effet d'impact
+            if (showDebugInfo && Time.frameCount % 60 == 0)
+            {
+                Debug.Log($"Laser hit: {hit.collider.gameObject.name}");
+            }
+        }
+
+        // Mettre à jour le LineRenderer
+        laserBeam.SetPosition(0, laserStart);
+        laserBeam.SetPosition(1, laserEnd);
+    }
+
+    void UpdateLaserPinch()
+    {
+        // Position et direction du laser depuis la main qui pince
+        Vector3 laserStart = pinchHand.transform.position + pinchHand.transform.forward * 0.05f;
+        Vector3 laserDir = pinchHand.transform.forward;
+
+        // Mettre à jour la position de l'objet laser
+        if (laserObject != null)
+        {
+            laserObject.transform.position = laserStart;
+            laserObject.transform.rotation = Quaternion.LookRotation(laserDir);
+        }
+
+        // Calculer le point final du laser avec raycast
+        Vector3 laserEnd = laserStart + laserDir * laserDistance;
+        RaycastHit hit;
+        if (Physics.Raycast(laserStart, laserDir, out hit, laserDistance, laserHitLayers))
+        {
+            laserEnd = hit.point;
+
             if (showDebugInfo && Time.frameCount % 60 == 0)
             {
                 Debug.Log($"Laser hit: {hit.collider.gameObject.name}");

@@ -836,7 +836,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &162100458
 Transform:
   m_ObjectHideFlags: 0
@@ -861,18 +861,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 162100457}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ced51606b90c344ea29d65f867fc429, type: 3}
+  m_Script: {fileID: 11500000, guid: bf77ed153e37b4d4ea65a1de9b125d42, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandPistolet
-  hand: {fileID: 811248998}
-  fireBallPrefab: {fileID: 2972392977303283589, guid: 11c9a5d587e034e43a68d4ebfb901206, type: 3}
-  chargeTime: 3
-  launchForce: 15
-  showChargingEffect: 1
-  maxChargeScale: 0.3
-  extendedThreshold: 0.3
-  closedThreshold: 0.6
-  showDebugInfo: 1
+  m_EditorClassIdentifier: Assembly-CSharp::TriangleLaser
+  leftHand: {fileID: 811248998}
+  rightHand: {fileID: 332629152}
+  gestureType: 1
+  pinchHand: {fileID: 811248998}
+  laserPrefab: {fileID: 3139904552554517557, guid: f79576f3cb4b9ac4da5829e6528a85d4, type: 3}
+  laserDistance: 10
+  laserWidth: 0.05
+  laserHitLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  openHandThreshold: 0.08
+  touchDistanceThreshold: 0.08
+  showDebugInfo: 0
+  showDebugGizmos: 1
 --- !u!198 &199472117 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 5936051452375858000, guid: 7a937ee5bc40ba142a195e3a41fa7258, type: 3}
