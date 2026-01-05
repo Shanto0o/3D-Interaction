@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Script simple pour attraper une épée en VR.
-/// Basé sur le fonctionnement de BouleDeFeu.cs
+/// Script simple pour attraper une épée en VR avec inertie physique réaliste.
+/// Basé sur le fonctionnement de BouleDeFeu.cs avec système Spring-Damper.
 /// </summary>
 public class SwordGrabInteraction : MonoBehaviour
 {
@@ -22,6 +22,20 @@ public class SwordGrabInteraction : MonoBehaviour
     public Vector3 attachmentOffset = new Vector3(0, -0.05f, 0.1f);
     public Vector3 attachmentRotationOffset = new Vector3(-90, 0, 0);
     
+    [Header("Physics Follow Settings (Inertie)")]
+    [Tooltip("Force du ressort pour la position (plus élevé = plus rigide)")]
+    public float positionSpring = 80f;
+    [Tooltip("Amortissement de la position (réduit les oscillations)")]
+    public float positionDamping = 8f;
+    [Tooltip("Force maximale appliquée")]
+    public float maxForce = 50f;
+    [Tooltip("Force de rotation appliquée")]
+    public float rotationStrength = 40f;
+    [Tooltip("Amortissement de la rotation")]
+    public float rotationDrag = 10f;
+    [Tooltip("Masse de l'épée (kg)")]
+    public float swordMass = 2f;
+    
     [Header("Visual Feedback")]
     public bool showChargingEffect = true;
     public float maxChargeScale = 0.3f;
@@ -40,6 +54,10 @@ public class SwordGrabInteraction : MonoBehaviour
     private GameObject chargingVisual;
     private Vector3 originalPosition;
     private Quaternion originalRotation;
+    
+    // Pour le tracking de vélocité (inertie)
+    private Vector3 previousHandPosition;
+    private Vector3 handVelocity;
     
     void Start()
     {
@@ -65,6 +83,17 @@ public class SwordGrabInteraction : MonoBehaviour
         
         originalPosition = transform.position;
         originalRotation = transform.rotation;
+        
+        // Configurer le Rigidbody pour la physique avec inertie
+        if (swordRigidbody != null)
+        {
+            swordRigidbody.mass = swordMass;
+            swordRigidbody.linearDamping = 0.5f; // Résistance à l'air
+            swordRigidbody.angularDamping = 1f; // Résistance à la rotation
+            swordRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+            swordRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+            swordRigidbody.maxAngularVelocity = 30f; // Limiter la vitesse de rotation
+        }
         
         // Créer la visualisation de la zone
         CreateZoneVisualization();
@@ -107,7 +136,7 @@ public class SwordGrabInteraction : MonoBehaviour
         // Si l'épée est attachée, la faire suivre la main
         if (isAttached)
         {
-            FollowHand();
+            CalculateHandVelocity();
             CheckDetach();
             return;
         }
@@ -281,11 +310,17 @@ public class SwordGrabInteraction : MonoBehaviour
         isGrabbing = false;
         isPinching = false;
         
-        // Désactiver physique
+        // NE PAS rendre kinematic - garder la physique active pour l'inertie
         if (swordRigidbody != null)
         {
-            swordRigidbody.isKinematic = true;
+            swordRigidbody.isKinematic = false;
             swordRigidbody.useGravity = false;
+        }
+        
+        // Initialiser le tracking de position pour le calcul de vélocité
+        if (rightHand != null)
+        {
+            previousHandPosition = rightHand.transform.position + rightHand.transform.TransformDirection(attachmentOffset);
         }
         
         // Cacher la zone
@@ -296,16 +331,84 @@ public class SwordGrabInteraction : MonoBehaviour
         
         if (showDebugInfo)
         {
-            Debug.Log("⚔️ Épée attachée!");
+            Debug.Log("⚔️ Épée attachée! (Mode physique avec inertie)");
         }
     }
     
-    void FollowHand()
+    void CalculateHandVelocity()
     {
-        if (rightHand == null) return;
+        if (rightHand == null || swordRigidbody == null) return;
         
-        transform.position = rightHand.transform.position + rightHand.transform.TransformDirection(attachmentOffset);
-        transform.rotation = rightHand.transform.rotation * Quaternion.Euler(attachmentRotationOffset);
+        // Calculer la position cible
+        Vector3 currentHandPos = rightHand.transform.position + rightHand.transform.TransformDirection(attachmentOffset);
+        
+        // Calculer la vélocité de la main
+        handVelocity = (currentHandPos - previousHandPosition) / Time.deltaTime;
+        previousHandPosition = currentHandPos;
+    }
+    
+    void FixedUpdate()
+    {
+        // Appliquer les forces de suivi uniquement si attaché
+        if (isAttached && rightHand != null && swordRigidbody != null)
+        {
+            FollowHandWithForces();
+            FollowHandRotation();
+        }
+    }
+    
+    void FollowHandWithForces()
+    {
+        if (rightHand == null || swordRigidbody == null) return;
+        
+        // Position cible
+        Vector3 targetPosition = rightHand.transform.position + rightHand.transform.TransformDirection(attachmentOffset);
+        
+        // Calculer l'erreur de position et de vélocité
+        Vector3 positionError = targetPosition - swordRigidbody.position;
+        Vector3 velocityError = handVelocity - swordRigidbody.linearVelocity;
+        
+        // PD Controller: Force = Kp * error + Kd * velocityError
+        Vector3 force = positionSpring * positionError + positionDamping * velocityError;
+        
+        // Limiter la force
+        force = Vector3.ClampMagnitude(force, maxForce);
+        
+        // Appliquer la force
+        swordRigidbody.AddForce(force, ForceMode.Force);
+    }
+    
+    void FollowHandRotation()
+    {
+        if (rightHand == null || swordRigidbody == null) return;
+        
+        // Rotation cible
+        Quaternion targetRotation = rightHand.transform.rotation * Quaternion.Euler(attachmentRotationOffset);
+        
+        // Calculer la différence de rotation
+        Quaternion deltaRotation = targetRotation * Quaternion.Inverse(swordRigidbody.rotation);
+        
+        // Convertir en angle-axis
+        Vector3 rotationAxis;
+        float rotationAngle;
+        deltaRotation.ToAngleAxis(out rotationAngle, out rotationAxis);
+        
+        // Normaliser l'angle pour le plus court chemin
+        if (rotationAngle > 180f)
+            rotationAngle -= 360f;
+        
+        // Appliquer le torque si l'angle est valide
+        if (!float.IsInfinity(rotationAxis.x) && rotationAxis != Vector3.zero && rotationAngle != 0)
+        {
+            // Convertir en radians et créer le vecteur de torque
+            Vector3 targetAngularVelocity = rotationAxis.normalized * (rotationAngle * Mathf.Deg2Rad * rotationStrength);
+            
+            // Calculer le torque avec amortissement
+            Vector3 torque = targetAngularVelocity - swordRigidbody.angularVelocity * rotationDrag;
+            
+            // Appliquer le torque
+            swordRigidbody.AddTorque(torque, ForceMode.Acceleration);
+        }
     }
     
     void CheckDetach()
