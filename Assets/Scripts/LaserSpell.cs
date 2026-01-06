@@ -23,8 +23,6 @@ public class TriangleLaser : MonoBehaviour
     public LayerMask laserHitLayers = ~0;
 
     [Header("Triangle Detection")]
-    [Range(0.01f, 0.2f)]
-    public float openHandThreshold = 0.08f;
     [Range(0.01f, 0.15f)]
     public float touchDistanceThreshold = 0.08f;
 
@@ -36,7 +34,6 @@ public class TriangleLaser : MonoBehaviour
     private GameObject laserObject;
     private ParticleSystem laserEffect;
     private LineRenderer laserBeam;
-    private Vector3 triangleCenter;
     private bool wasPinching = false;
 
     void Start()
@@ -64,7 +61,7 @@ public class TriangleLaser : MonoBehaviour
                 return;
             }
 
-            bool shouldActivateLaser = CheckTriangleGesture();
+            bool shouldActivateLaser = CheckHandsTouchingGesture();
 
             if (shouldActivateLaser && !isLaserActive)
             {
@@ -117,65 +114,40 @@ public class TriangleLaser : MonoBehaviour
         wasPinching = pinchActive;
     }
 
-    bool CheckTriangleGesture()
+    bool CheckHandsTouchingGesture()
     {
-        // Vérifier que les deux mains sont ouvertes
-        if (!IsHandOpen(leftHand) || !IsHandOpen(rightHand))
+        // Vérifier que tous les doigts des deux mains se touchent
+        OVRHand.HandFinger[] fingers = new OVRHand.HandFinger[] 
+        { 
+            OVRHand.HandFinger.Thumb, 
+            OVRHand.HandFinger.Index, 
+            OVRHand.HandFinger.Middle, 
+            OVRHand.HandFinger.Ring, 
+            OVRHand.HandFinger.Pinky 
+        };
+
+        foreach (var finger in fingers)
         {
-            if (showDebugInfo && Time.frameCount % 30 == 0)
+            Vector3 leftFingerTip = GetFingerTipPosition(leftHand, finger);
+            Vector3 rightFingerTip = GetFingerTipPosition(rightHand, finger);
+            float distance = Vector3.Distance(leftFingerTip, rightFingerTip);
+
+            if (distance > touchDistanceThreshold)
             {
-                Debug.Log("Hands not fully open");
+                if (showDebugInfo && Time.frameCount % 30 == 0)
+                {
+                    Debug.Log($"{finger} not touching: distance = {distance:F3}m");
+                }
+                return false;
             }
-            return false;
         }
-
-        // Obtenir les positions des pouces et index
-        Vector3 leftThumbTip = GetFingerTipPosition(leftHand, OVRHand.HandFinger.Thumb);
-        Vector3 rightThumbTip = GetFingerTipPosition(rightHand, OVRHand.HandFinger.Thumb);
-        Vector3 leftIndexTip = GetFingerTipPosition(leftHand, OVRHand.HandFinger.Index);
-        Vector3 rightIndexTip = GetFingerTipPosition(rightHand, OVRHand.HandFinger.Index);
-
-        // Vérifier que les pouces se touchent
-        float thumbDistance = Vector3.Distance(leftThumbTip, rightThumbTip);
-        if (thumbDistance > touchDistanceThreshold)
-        {
-            if (showDebugInfo && Time.frameCount % 30 == 0)
-            {
-                Debug.Log($"Thumbs not touching: distance = {thumbDistance:F3}m");
-            }
-            return false;
-        }
-
-        // Vérifier que les index se touchent
-        float indexDistance = Vector3.Distance(leftIndexTip, rightIndexTip);
-        if (indexDistance > touchDistanceThreshold)
-        {
-            if (showDebugInfo && Time.frameCount % 30 == 0)
-            {
-                Debug.Log($"Index fingers not touching: distance = {indexDistance:F3}m");
-            }
-            return false;
-        }
-
-        // Calculer le centre du triangle
-        Vector3 thumbCenter = (leftThumbTip + rightThumbTip) / 2f;
-        Vector3 indexCenter = (leftIndexTip + rightIndexTip) / 2f;
-        triangleCenter = (thumbCenter + indexCenter) / 2f;
 
         if (showDebugInfo && Time.frameCount % 30 == 0)
         {
-            Debug.Log($"Triangle gesture detected! Center: {triangleCenter}");
+            Debug.Log("All fingers touching - gesture detected!");
         }
 
         return true;
-    }
-
-    bool IsHandOpen(OVRHand hand)
-    {
-        return hand.GetFingerPinchStrength(OVRHand.HandFinger.Index) < openHandThreshold &&
-               hand.GetFingerPinchStrength(OVRHand.HandFinger.Middle) < openHandThreshold &&
-               hand.GetFingerPinchStrength(OVRHand.HandFinger.Ring) < openHandThreshold &&
-               hand.GetFingerPinchStrength(OVRHand.HandFinger.Pinky) < openHandThreshold;
     }
 
     Vector3 GetFingerTipPosition(OVRHand hand, OVRHand.HandFinger finger)
@@ -225,7 +197,7 @@ public class TriangleLaser : MonoBehaviour
 
         // Déterminer la position initiale selon le type de geste
         Vector3 initialPosition = (gestureType == LaserGestureType.Triangle) 
-            ? triangleCenter 
+            ? (leftHand.transform.position + rightHand.transform.position) / 2f
             : pinchHand.transform.position + pinchHand.transform.forward * 0.05f;
 
         // Créer l'objet laser
@@ -251,39 +223,27 @@ public class TriangleLaser : MonoBehaviour
 
     void UpdateLaser()
     {
-        // Recalculer le centre du triangle à chaque frame
-        Vector3 leftThumbTip = GetFingerTipPosition(leftHand, OVRHand.HandFinger.Thumb);
-        Vector3 rightThumbTip = GetFingerTipPosition(rightHand, OVRHand.HandFinger.Thumb);
-        Vector3 leftIndexTip = GetFingerTipPosition(leftHand, OVRHand.HandFinger.Index);
-        Vector3 rightIndexTip = GetFingerTipPosition(rightHand, OVRHand.HandFinger.Index);
-
-        Vector3 thumbCenter = (leftThumbTip + rightThumbTip) / 2f;
-        Vector3 indexCenter = (leftIndexTip + rightIndexTip) / 2f;
-        triangleCenter = (thumbCenter + indexCenter) / 2f;
+        // Calculer la position centrale entre les deux mains
+        Vector3 handsCenter = (leftHand.transform.position + rightHand.transform.position) / 2f;
 
         // Mettre à jour la position de l'objet laser
         if (laserObject != null)
         {
-            laserObject.transform.position = triangleCenter;
+            laserObject.transform.position = handsCenter;
 
-            // Calculer la direction du laser (depuis le centre vers l'avant)
-            // On utilise la normale du triangle formé par les 4 points
-            Vector3 toIndex = indexCenter - thumbCenter;
-            Vector3 toLeft = leftIndexTip - leftThumbTip;
-            Vector3 laserDirection = Vector3.Cross(toIndex, toLeft).normalized;
-
-            // S'assurer que le laser pointe vers l'avant (pas vers l'utilisateur)
-            Vector3 headForward = Camera.main.transform.forward;
-            if (Vector3.Dot(laserDirection, headForward) < 0)
-            {
-                laserDirection = -laserDirection;
-            }
+            // Calculer la direction du laser vers l'avant des index
+            Vector3 leftIndexTip = GetFingerTipPosition(leftHand, OVRHand.HandFinger.Index);
+            Vector3 rightIndexTip = GetFingerTipPosition(rightHand, OVRHand.HandFinger.Index);
+            Vector3 indexCenter = (leftIndexTip + rightIndexTip) / 2f;
+            
+            // Direction depuis le centre des mains vers le centre des index
+            Vector3 laserDirection = (indexCenter - handsCenter).normalized;
 
             laserObject.transform.rotation = Quaternion.LookRotation(laserDirection);
         }
 
         // Mettre à jour le faisceau laser (raycast pour détecter les collisions)
-        Vector3 laserStart = triangleCenter;
+        Vector3 laserStart = handsCenter;
         Vector3 laserDir = laserObject != null ? laserObject.transform.forward : Camera.main.transform.forward;
         Vector3 laserEnd = laserStart + laserDir * laserDistance;
 
@@ -365,32 +325,39 @@ public class TriangleLaser : MonoBehaviour
         if (!showDebugGizmos || leftHand == null || rightHand == null)
             return;
 
-        // Dessiner les positions des doigts
-        Vector3 leftThumbTip = GetFingerTipPosition(leftHand, OVRHand.HandFinger.Thumb);
-        Vector3 rightThumbTip = GetFingerTipPosition(rightHand, OVRHand.HandFinger.Thumb);
-        Vector3 leftIndexTip = GetFingerTipPosition(leftHand, OVRHand.HandFinger.Index);
-        Vector3 rightIndexTip = GetFingerTipPosition(rightHand, OVRHand.HandFinger.Index);
+        // Dessiner les positions de tous les doigts
+        OVRHand.HandFinger[] fingers = new OVRHand.HandFinger[] 
+        { 
+            OVRHand.HandFinger.Thumb, 
+            OVRHand.HandFinger.Index, 
+            OVRHand.HandFinger.Middle, 
+            OVRHand.HandFinger.Ring, 
+            OVRHand.HandFinger.Pinky 
+        };
 
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(leftThumbTip, 0.01f);
-        Gizmos.DrawWireSphere(rightThumbTip, 0.01f);
-        
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(leftIndexTip, 0.01f);
-        Gizmos.DrawWireSphere(rightIndexTip, 0.01f);
+        foreach (var finger in fingers)
+        {
+            Vector3 leftFingerTip = GetFingerTipPosition(leftHand, finger);
+            Vector3 rightFingerTip = GetFingerTipPosition(rightHand, finger);
 
-        // Dessiner le triangle
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(leftFingerTip, 0.008f);
+            Gizmos.DrawWireSphere(rightFingerTip, 0.008f);
+
+            // Dessiner une ligne entre les doigts correspondants
+            if (isLaserActive)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawLine(leftFingerTip, rightFingerTip);
+            }
+        }
+
+        // Dessiner le centre entre les mains
         if (isLaserActive)
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(leftThumbTip, rightThumbTip);
-            Gizmos.DrawLine(leftIndexTip, rightIndexTip);
-            Gizmos.DrawLine(leftThumbTip, leftIndexTip);
-            Gizmos.DrawLine(rightThumbTip, rightIndexTip);
-
-            // Dessiner le centre
+            Vector3 handsCenter = (leftHand.transform.position + rightHand.transform.position) / 2f;
             Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(triangleCenter, 0.02f);
+            Gizmos.DrawWireSphere(handsCenter, 0.02f);
         }
     }
 

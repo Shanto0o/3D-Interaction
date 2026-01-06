@@ -874,7 +874,6 @@ MonoBehaviour:
   laserHitLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  openHandThreshold: 0.08
   touchDistanceThreshold: 0.08
   showDebugInfo: 0
   showDebugGizmos: 1
