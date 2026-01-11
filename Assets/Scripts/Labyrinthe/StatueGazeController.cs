@@ -17,6 +17,9 @@ public class StatueGazeController : MonoBehaviour
     [Tooltip("The trigger collider (child of statue) used for detection. Leave empty to detect statue directly.")]
     public GameObject detectionTrigger;
     
+    [Tooltip("AudioSource to play when statue is moving")]
+    public AudioSource statueAudioSource;
+    
     [Header("Raycast Settings")]
     [Tooltip("Maximum distance for raycast detection")]
     public float rayLength = 20f;
@@ -164,6 +167,13 @@ public class StatueGazeController : MonoBehaviour
         if (aiPath != null)
         {
             aiPath.canMove = false;
+            
+            // Arrêter le son de déplacement
+            if (statueAudioSource != null && statueAudioSource.isPlaying)
+            {
+                statueAudioSource.Stop();
+            }
+            
             Debug.Log($"Statue frozen! Player is looking at {statueObject.name}");
         }
     }
@@ -176,6 +186,13 @@ public class StatueGazeController : MonoBehaviour
         if (aiPath != null && !isLookingAtStatue)
         {
             aiPath.canMove = true;
+            
+            // Jouer le son de déplacement
+            if (statueAudioSource != null && !statueAudioSource.isPlaying)
+            {
+                statueAudioSource.Play();
+            }
+            
             Debug.Log($"Statue can move again! Player looked away from {statueObject.name}");
         }
     }
@@ -186,6 +203,12 @@ public class StatueGazeController : MonoBehaviour
         if (aiPath != null)
         {
             aiPath.canMove = true;
+        }
+        
+        // Arrêter le son si il joue
+        if (statueAudioSource != null && statueAudioSource.isPlaying)
+        {
+            statueAudioSource.Stop();
         }
     }
     
