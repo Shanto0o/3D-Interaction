@@ -29,11 +29,15 @@ public class FogTriggerZone : MonoBehaviour
 
     private bool playerInZone = false;
     private float originalAmbientIntensity;
+    private float originalReflectionIntensity;
 
     private void Start()
     {
         // Sauvegarder l'intensité ambiante d'origine
         originalAmbientIntensity = RenderSettings.ambientIntensity;
+        
+        // Sauvegarder l'intensity multiplier des reflections d'origine
+        originalReflectionIntensity = RenderSettings.reflectionIntensity;
 
         // Désactiver le fog au démarrage
         RenderSettings.fog = false;
@@ -106,10 +110,13 @@ public class FogTriggerZone : MonoBehaviour
         
         // Réduire l'intensité de l'éclairage ambiant à 0
         RenderSettings.ambientIntensity = 0f;
+        
+        // Réduire l'intensity multiplier des reflections à 0.1
+        RenderSettings.reflectionIntensity = 0.1f;
 
         if (showDebugInfo)
         {
-            Debug.Log($"[FogTriggerZone] Fog activé - Mode: {fogMode}, Densité: {fogDensity}, Ambient Intensity: 0");
+            Debug.Log($"[FogTriggerZone] Fog activé - Mode: {fogMode}, Densité: {fogDensity}, Ambient Intensity: 0, Reflection Intensity: 0.1");
         }
     }
 
@@ -119,10 +126,13 @@ public class FogTriggerZone : MonoBehaviour
         
         // Restaurer l'intensité de l'éclairage ambiant
         RenderSettings.ambientIntensity = originalAmbientIntensity;
+        
+        // Restaurer l'intensity multiplier des reflections
+        RenderSettings.reflectionIntensity = originalReflectionIntensity;
 
         if (showDebugInfo)
         {
-            Debug.Log($"[FogTriggerZone] Fog désactivé, Ambient Intensity restaurée: {originalAmbientIntensity}");
+            Debug.Log($"[FogTriggerZone] Fog désactivé, Ambient Intensity restaurée: {originalAmbientIntensity}, Reflection Intensity restaurée: {originalReflectionIntensity}");
         }
     }
 
