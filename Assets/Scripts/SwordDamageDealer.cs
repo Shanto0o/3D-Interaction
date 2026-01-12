@@ -194,15 +194,35 @@ public class SwordDamageDealer : MonoBehaviour
             Debug.Log($"   └─ Épée useGravity: {swordRigidbody.useGravity}");
         }
         
-        // Vérifier si l'objet touché a un BossCube
+        // Vérifier si l'objet touché a un BossCube ou SlimeBoss
         BossCube boss = collision.gameObject.GetComponent<BossCube>();
+        SlimeBoss slimeBoss = collision.gameObject.GetComponent<SlimeBoss>();
         if (boss != null)
         {
             Debug.Log($"✅ BossCube détecté sur [{collision.gameObject.name}]!");
         }
+        else if (slimeBoss != null)
+        {
+            Debug.Log($"✅ SlimeBoss détecté sur [{collision.gameObject.name}]!");
+        }
         else
         {
-            Debug.Log($"ℹ️ Pas de BossCube sur [{collision.gameObject.name}]");
+            Debug.Log($"ℹ️ Pas de BossCube/SlimeBoss sur [{collision.gameObject.name}]");
+            // Chercher dans les parents
+            boss = collision.gameObject.GetComponentInParent<BossCube>();
+            slimeBoss = collision.gameObject.GetComponentInParent<SlimeBoss>();
+            if (boss != null)
+            {
+                Debug.Log($"✅ BossCube trouvé dans parent!");
+            }
+            else if (slimeBoss != null)
+            {
+                Debug.Log($"✅ SlimeBoss trouvé dans parent!");
+            }
+            else
+            {
+                Debug.Log($"❌ Aucun boss trouvé (ni sur objet ni dans parents)");
+            }
         }
     }
     
@@ -211,25 +231,47 @@ public class SwordDamageDealer : MonoBehaviour
     /// </summary>
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log($"⚔️ ===== ÉPÉE: OnTriggerEnter avec [{other.gameObject.name}] =====");
-        Debug.Log($"   └─ Vélocité manuelle: {manualVelocity.magnitude:F2} m/s");
+        Debug.Log($"⚔️⚔️⚔️ SWORD OnTriggerEnter APPELÉ!");
+        Debug.Log($"   └─ Objet trigger: {other.gameObject.name}");
         Debug.Log($"   └─ Layer: {LayerMask.LayerToName(other.gameObject.layer)}");
         Debug.Log($"   └─ Tag: {other.gameObject.tag}");
+        Debug.Log($"   └─ IsTrigger: {other.isTrigger}");
+        Debug.Log($"   └─ Vélocité manuelle: {manualVelocity.magnitude:F2} m/s");
         
         if (swordRigidbody != null)
         {
             Debug.Log($"   └─ Épée isKinematic: {swordRigidbody.isKinematic}");
         }
         
-        // Vérifier si l'objet touché a un BossCube
+        // Vérifier si l'objet touché a un BossCube ou SlimeBoss
         BossCube boss = other.gameObject.GetComponent<BossCube>();
+        SlimeBoss slimeBoss = other.gameObject.GetComponent<SlimeBoss>();
         if (boss != null)
         {
             Debug.Log($"✅ BossCube détecté sur [{other.gameObject.name}]!");
         }
+        else if (slimeBoss != null)
+        {
+            Debug.Log($"✅ SlimeBoss détecté sur [{other.gameObject.name}]!");
+        }
         else
         {
-            Debug.Log($"ℹ️ Pas de BossCube sur [{other.gameObject.name}]");
+            Debug.Log($"ℹ️ Pas de BossCube/SlimeBoss sur [{other.gameObject.name}]");
+            // Chercher dans les parents
+            boss = other.gameObject.GetComponentInParent<BossCube>();
+            slimeBoss = other.gameObject.GetComponentInParent<SlimeBoss>();
+            if (boss != null)
+            {
+                Debug.Log($"✅ BossCube trouvé dans parent!");
+            }
+            else if (slimeBoss != null)
+            {
+                Debug.Log($"✅ SlimeBoss trouvé dans parent!");
+            }
+            else
+            {
+                Debug.Log($"❌ Aucun boss trouvé (ni sur objet ni dans parents)");
+            }
         }
     }
 }
