@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TriangleLaser
   leftHand: {fileID: 1114826610}
   rightHand: {fileID: 277945916}
-  gestureType: 0
+  gestureType: 1
   pinchHand: {fileID: 1114826610}
   laserPrefab: {fileID: 3139904552554517557, guid: f79576f3cb4b9ac4da5829e6528a85d4, type: 3}
   laserDistance: 40
@@ -9423,7 +9423,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -7965257871258286753, guid: de1150078713d4f4b873a85bb09238c8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -11303,7 +11304,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -7965257871258286753, guid: de1150078713d4f4b873a85bb09238c8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -11629,7 +11631,7 @@ MonoBehaviour:
   minimumVelocity: 1
   showHitFeedback: 1
   swingHitSound: {fileID: 0}
-  showDebugInfo: 1
+  showDebugInfo: 0
 --- !u!114 &1819486762
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11654,9 +11656,9 @@ MonoBehaviour:
   rotationStrength: 40
   rotationDrag: 10
   swordMass: 1.2
-  showChargingEffect: 1
+  showChargingEffect: 0
   maxChargeScale: 0.3
-  showDebugInfo: 1
+  showDebugInfo: 0
 --- !u!64 &1819486767
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11747,7 +11749,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -7965257871258286753, guid: de1150078713d4f4b873a85bb09238c8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -12002,7 +12005,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -7965257871258286753, guid: de1150078713d4f4b873a85bb09238c8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -12740,7 +12744,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: -7965257871258286753, guid: de1150078713d4f4b873a85bb09238c8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
