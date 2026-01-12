@@ -251,11 +251,35 @@ public class TriangleLaser : MonoBehaviour
         if (Physics.Raycast(laserStart, laserDir, out hit, laserDistance, laserHitLayers))
         {
             laserEnd = hit.point;
+            
+            // Log de collision détaillé
+            if (showDebugInfo && Time.frameCount % 30 == 0)
+            {
+                Debug.Log($"🔴 LASER COLLISION: {hit.collider.gameObject.name}");
+                Debug.Log($"   └─ Distance: {hit.distance:F2}m");
+                Debug.Log($"   └─ Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
+                Debug.Log($"   └─ Tag: {hit.collider.tag}");
+                Debug.Log($"   └─ Type Collider: {hit.collider.GetType().Name}");
+            }
 
-            // Optionnel: ajouter un effet d'impact
+            // Détecter si on touche un cristal
+            Crystal crystal = hit.collider.GetComponent<Crystal>();
+            if (crystal != null)
+            {
+                crystal.OnLaserHit();
+                
+                if (showDebugInfo && Time.frameCount % 30 == 0)
+                {
+                    Debug.Log($"⚡ LASER TOUCHE CRISTAL: {hit.collider.gameObject.name} à {hit.distance:F2}m");
+                }
+            }
+        }
+        else
+        {
+            // Log quand le laser ne touche rien
             if (showDebugInfo && Time.frameCount % 60 == 0)
             {
-                Debug.Log($"Laser hit: {hit.collider.gameObject.name}");
+                Debug.Log("🔵 LASER: Aucune collision détectée");
             }
         }
 
@@ -283,10 +307,35 @@ public class TriangleLaser : MonoBehaviour
         if (Physics.Raycast(laserStart, laserDir, out hit, laserDistance, laserHitLayers))
         {
             laserEnd = hit.point;
-
+            
+            // Log de collision détaillé
+            if (showDebugInfo && Time.frameCount % 30 == 0)
+            {
+                Debug.Log($"🔴 LASER (PINCH) COLLISION: {hit.collider.gameObject.name}");
+                Debug.Log($"   └─ Distance: {hit.distance:F2}m");
+                Debug.Log($"   └─ Layer: {LayerMask.LayerToName(hit.collider.gameObject.layer)}");
+                Debug.Log($"   └─ Tag: {hit.collider.tag}");
+                Debug.Log($"   └─ Type Collider: {hit.collider.GetType().Name}");
+            }
+            
+            // Détecter si on touche un cristal
+            Crystal crystal = hit.collider.GetComponent<Crystal>();
+            if (crystal != null)
+            {
+                crystal.OnLaserHit();
+                
+                if (showDebugInfo && Time.frameCount % 30 == 0)
+                {
+                    Debug.Log($"⚡ LASER (PINCH) TOUCHE CRISTAL: {hit.collider.gameObject.name} à {hit.distance:F2}m");
+                }
+            }
+        }
+        else
+        {
+            // Log quand le laser ne touche rien
             if (showDebugInfo && Time.frameCount % 60 == 0)
             {
-                Debug.Log($"Laser hit: {hit.collider.gameObject.name}");
+                Debug.Log("🔵 LASER (PINCH): Aucune collision détectée");
             }
         }
 

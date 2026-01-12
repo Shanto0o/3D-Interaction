@@ -24,6 +24,10 @@ public class SlimeBoss : MonoBehaviour
     [Header("Phase 2 - Immunité")]
     [Tooltip("AppVoiceExperience pour la commande vocale 'combat'")]
     public AppVoiceExperience voice;
+    [Tooltip("Si true, les cristaux doivent être détruits pour enlever l'immunité. Si false, seule la commande vocale fonctionne")]
+    public bool requireCrystalsDestroyed = true;
+    [Tooltip("Nombre total de cristaux dans la scène (ex: 1 maintenant, 7 plus tard)")]
+    public int totalCrystals = 1;
     
     [Header("Player Knockback")]
     [Tooltip("PlayerController à repousser lors des collisions")]
@@ -87,6 +91,7 @@ public class SlimeBoss : MonoBehaviour
     private Color flashColor;
     private bool isPhase2Immune = true;
     private Rigidbody bossRigidbody;
+    private int crystalsDestroyed = 0;
     
     // Canvas overlay VR créé automatiquement
     private Canvas immuneCanvas;
@@ -136,6 +141,10 @@ public class SlimeBoss : MonoBehaviour
         {
             Debug.LogWarning("⚠️ AppVoiceExperience non assigné! Commande vocale désactivée.");
         }
+        
+        // S'abonner à l'événement de destruction des cristaux
+        Crystal.OnCrystalDestroyed += OnCrystalDestroyed;
+        Debug.Log($"💎 Système de cristaux activé: {totalCrystals} cristaux requis");
         
         // Créer le Canvas overlay VR
         CreateVROverlayCanvas();
@@ -196,6 +205,12 @@ public class SlimeBoss : MonoBehaviour
         canvasObj.SetActive(false);
         
         Debug.Log("✅ Canvas overlay VR créé et attaché à la caméra");
+    }
+    
+    void OnDestroy()
+    {
+        // Se désabonner de l'événement pour éviter les fuites mémoire
+        Crystal.OnCrystalDestroyed -= OnCrystalDestroyed;
     }
     
     void Update()
@@ -568,22 +583,63 @@ public class SlimeBoss : MonoBehaviour
     
     void RemoveImmunity()
     {
+        // Vérifier si les cristaux doivent être détruits
+        if (requireCrystalsDestroyed && crystalsDestroyed < totalCrystals)
+        {
+            int remaining = totalCrystals - crystalsDestroyed;
+            Debug.Log($"❌ Impossible de retirer l'immunité! {remaining} cristaux restants ({crystalsDestroyed}/{totalCrystals} détruits)");
+            
+            // Optionnel: afficher un message au joueur
+            if (immuneCanvas != null && immuneText != null)
+            {
+                immuneText.text = $"Détruisez les {remaining} cristaux!";
+                immuneCanvas.gameObject.SetActive(true);
+                CancelInvoke(nameof(HideImmuneText));
+                Invoke(nameof(HideImmuneText), immuneTextDuration);
+            }
+            
+            return;
+        }
+        
         isPhase2Immune = false;
         
         if (showDebugInfo)
         {
             Debug.Log("✅ Immunité retirée! Le boss peut maintenant être frappé!");
+            if (requireCrystalsDestroyed)
+            {
+                Debug.Log($"   └─ Tous les cristaux ont été détruits ({crystalsDestroyed}/{totalCrystals})");
+            }
         }
         
-        // Effet visuel (flash vert pour confirmer)
-        flashColor = Color.green;
-        isFlashing = true;
-        flashTimer = phaseFlashDuration;
+        // Effet visuel pour montrer que l'immunité est levée
+        ShowPhaseChangeEffect();
+    }
+    
+    /// <summary>
+    /// Appelé quand un cristal est détruit
+    /// </summary>
+    void OnCrystalDestroyed(Crystal crystal)
+    {
+        crystalsDestroyed++;
         
-        // Son de confirmation
-        if (phaseChangeSound != null && audioSource != null)
+        Debug.Log($"💎💥 CRISTAL DÉTRUIT: {crystal.gameObject.name}");
+        Debug.Log($"   └─ Progression: {crystalsDestroyed}/{totalCrystals} cristaux détruits");
+        
+        // Si tous les cristaux sont détruits, retirer automatiquement l'immunité
+        if (crystalsDestroyed >= totalCrystals)
         {
-            audioSource.PlayOneShot(phaseChangeSound);
+            Debug.Log($"✅✅✅ TOUS LES CRISTAUX DÉTRUITS! Immunité automatiquement retirée!");
+            
+            if (currentPhase == BossPhase.Phase2_Red_Normal && isPhase2Immune)
+            {
+                RemoveImmunity();
+            }
+        }
+        else
+        {
+            int remaining = totalCrystals - crystalsDestroyed;
+            Debug.Log($"⏳ {remaining} cristaux restants");
         }
     }
     
