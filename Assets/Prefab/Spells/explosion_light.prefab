@@ -29779,7 +29779,7 @@ ParticleSystem:
     startSizeY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3
+      scalar: 50
       minScalar: 1
       maxCurve:
         serializedVersion: 2

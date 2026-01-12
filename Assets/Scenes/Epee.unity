@@ -823,7 +823,7 @@ MonoBehaviour:
   hitsPerSubPhase: 5
   voice: {fileID: 91644375}
   requireCrystalsDestroyed: 1
-  totalCrystals: 7
+  totalCrystals: 1
   playerController: {fileID: 1602402016}
   knockbackForce: 5
   knockbackUpForce: 2
@@ -1502,7 +1502,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 397733936}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e040c009a00d1e4ba45ecb86261c577, type: 3}
+  m_Script: {fileID: 11500000, guid: 49d430078f21bde4daebc31ce12984ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crystal
   breakDuration: 2
@@ -1638,7 +1638,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 202725919}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e040c009a00d1e4ba45ecb86261c577, type: 3}
+  m_Script: {fileID: 11500000, guid: 49d430078f21bde4daebc31ce12984ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crystal
   breakDuration: 2
@@ -9445,7 +9445,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 176713822}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e040c009a00d1e4ba45ecb86261c577, type: 3}
+  m_Script: {fileID: 11500000, guid: 49d430078f21bde4daebc31ce12984ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crystal
   breakDuration: 2
@@ -11328,7 +11328,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1442041667}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e040c009a00d1e4ba45ecb86261c577, type: 3}
+  m_Script: {fileID: 11500000, guid: 49d430078f21bde4daebc31ce12984ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crystal
   breakDuration: 2
@@ -11772,7 +11772,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 775243803}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e040c009a00d1e4ba45ecb86261c577, type: 3}
+  m_Script: {fileID: 11500000, guid: 49d430078f21bde4daebc31ce12984ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crystal
   breakDuration: 2
@@ -12027,7 +12027,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1359098088}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e040c009a00d1e4ba45ecb86261c577, type: 3}
+  m_Script: {fileID: 11500000, guid: 49d430078f21bde4daebc31ce12984ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crystal
   breakDuration: 2
@@ -12765,7 +12765,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 481316643}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e040c009a00d1e4ba45ecb86261c577, type: 3}
+  m_Script: {fileID: 11500000, guid: 49d430078f21bde4daebc31ce12984ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Crystal
   breakDuration: 2
