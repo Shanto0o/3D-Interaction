@@ -239,7 +239,8 @@ public class TriangleLaser : MonoBehaviour
             // Direction depuis le centre des mains vers le centre des index
             Vector3 laserDirection = (indexCenter - handsCenter).normalized;
 
-            laserObject.transform.rotation = Quaternion.LookRotation(laserDirection);
+            // Appliquer la rotation avec correction de 180° sur Y (prefab orienté dans le mauvais sens)
+            laserObject.transform.rotation = Quaternion.LookRotation(laserDirection) * Quaternion.Euler(0, 180, 0);
         }
 
         // Mettre à jour le faisceau laser (raycast pour détecter les collisions)
@@ -298,7 +299,8 @@ public class TriangleLaser : MonoBehaviour
         if (laserObject != null)
         {
             laserObject.transform.position = laserStart;
-            laserObject.transform.rotation = Quaternion.LookRotation(laserDir);
+            // Appliquer la rotation avec correction de 180° sur Y (prefab orienté dans le mauvais sens)
+            laserObject.transform.rotation = Quaternion.LookRotation(laserDir) * Quaternion.Euler(0, 180, 0);
         }
 
         // Calculer le point final du laser avec raycast
