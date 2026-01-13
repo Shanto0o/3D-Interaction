@@ -43,9 +43,15 @@ public class StatuePlayerCatcher : MonoBehaviour
     
     private bool isTeleporting = false;
     private float teleportTimer = 0f;
+    private Vector3 statueInitialPosition;
+    private Quaternion statueInitialRotation;
     
     void Start()
     {
+        // Save statue's initial position and rotation
+        statueInitialPosition = transform.position;
+        statueInitialRotation = transform.rotation;
+        
         // Auto-find AIPath component if not assigned
         if (statueAIPath == null)
         {
@@ -209,6 +215,20 @@ public class StatuePlayerCatcher : MonoBehaviour
             
             // Optional: match rotation
             // playerRig.rotation = teleportDestination.rotation;
+            
+            // Return statue to initial position
+            transform.position = statueInitialPosition;
+            transform.rotation = statueInitialRotation;
+            
+            // Reset statue's pathfinding if needed
+            if (statueAIPath != null)
+            {
+                statueAIPath.Teleport(statueInitialPosition);
+                if (showDebugMessages)
+                {
+                    Debug.Log($"StatuePlayerCatcher: Statue returned to initial position {statueInitialPosition}");
+                }
+            }
             
             if (showDebugMessages)
             {

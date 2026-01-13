@@ -8305,7 +8305,7 @@ MonoBehaviour:
   rightHandTransform: {fileID: 1409107527}
   spawnDistanceInFront: 1.5
   spawnHeightOffset: -0.5
-  spawnAnimationDuration: 0.5
+  spawnAnimationDuration: 5
   spawnScaleCurve:
     serializedVersion: 2
     m_Curve:

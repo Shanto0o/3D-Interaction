@@ -2,46 +2,26 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
-/// Script pour rendre une hache saisissable et lançable avec XR Interaction Toolkit
-/// Inclut rotation réaliste et système de plantation dans les surfaces
-/// À attacher sur la hache avec XRGrabInteractable
+/// Script pour rendre une hache/épée saisissable et lançable avec XR Interaction Toolkit
+/// À attacher sur l'arme avec XRGrabInteractable
 /// </summary>
 [RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable))]
 [RequireComponent(typeof(Rigidbody))]
 public class XRThrowableWeapon : MonoBehaviour
 {
-    [Header("Axe Settings")]
+    [Header("Weapon Settings")]
     [Tooltip("Dégâts infligés")]
-    public float damage = 75f;
+    public float damage = 50f;
     
     [Tooltip("Vitesse minimale pour infliger des dégâts")]
-    public float minVelocityForDamage = 3f;
-    
-    [Tooltip("Masse de la hache (kg)")]
-    public float axeMass = 1.5f;
+    public float minVelocityForDamage = 2f;
 
     [Header("Throw Settings")]
     [Tooltip("Multiplicateur de force de lancer")]
     public float throwVelocityScale = 1.5f;
     
-    [Tooltip("Multiplicateur de rotation de la hache")]
-    public float throwAngularVelocityScale = 2.5f;
-    
-    [Tooltip("Force de rotation automatique pour simulation de lancer de hache")]
-    public float axeSpinForce = 10f;
-    
-    [Tooltip("Axe de rotation de la hache (local space)")]
-    public Vector3 spinAxis = Vector3.right;
-
-    [Header("Stick Settings")]
-    [Tooltip("La hache peut-elle se planter dans les surfaces?")]
-    public bool canStickToSurfaces = true;
-    
-    [Tooltip("Vitesse minimale pour se planter")]
-    public float minStickVelocity = 4f;
-    
-    [Tooltip("Tags des objets où la hache peut se planter")]
-    public string[] stickableTags = new string[] { "Enemy", "Wood", "Target", "Wall" };
+    [Tooltip("Multiplicateur de rotation")]
+    public float throwAngularVelocityScale = 1.0f;
 
     [Header("Visual Feedback")]
     [Tooltip("Effet de particules lors de la saisie")]
@@ -60,16 +40,6 @@ public class XRThrowableWeapon : MonoBehaviour
     [Tooltip("Son lors de l'impact")]
     public AudioClip hitSound;
 
-    [Header("Return Settings")]
-    [Tooltip("La hache revient-elle automatiquement après X secondes?")]
-    public bool autoReturn = false;
-    
-    [Tooltip("Temps avant retour automatique (secondes)")]
-    public float returnTime = 3f;
-    
-    [Tooltip("Vitesse de retour")]
-    public float returnSpeed = 10f;
-
     [Header("Debug")]
     public bool showDebugInfo = false;
 
@@ -77,14 +47,8 @@ public class XRThrowableWeapon : MonoBehaviour
     private Rigidbody rb;
     private AudioSource audioSource;
     private bool isGrabbed = false;
-    private bool isStuck = false;
     private Vector3 velocity;
     private Vector3 lastPosition;
-    private Transform stuckParent;
-    private Vector3 stuckLocalPosition;
-    private Quaternion stuckLocalRotation;
-    private float throwTime = 0f;
-    private Transform ownerHand;
 
     void Awake()
     {
@@ -92,11 +56,9 @@ public class XRThrowableWeapon : MonoBehaviour
         grabInteractable = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
         rb = GetComponent<Rigidbody>();
 
-        // Configuration du Rigidbody pour une hache
-        rb.mass = axeMass;
+        // Configuration du Rigidbody
         rb.useGravity = true;
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
         // Audio Source
         audioSource = GetComponent<AudioSource>();
@@ -116,42 +78,22 @@ public class XRThrowableWeapon : MonoBehaviour
 
     void Update()
     {
-        if (isStuck)
-        {
-            // Maintenir la position si plantée
-            MaintainStuckPosition();
-            
-            // Retour automatique
-            if (autoReturn && Time.time - throwTime > returnTime)
-            {
-                ReturnToHand();
-            }
-            return;
-        }
-
         // Calculer la vélocité pour les dégâts
         velocity = (transform.position - lastPosition) / Time.deltaTime;
         lastPosition = transform.position;
 
         if (showDebugInfo && isGrabbed)
         {
-            Debug.Log($"[XRThrowableAxe] Velocity: {velocity.magnitude:F2} m/s");
+            Debug.Log($"[XRThrowableWeapon] Velocity: {velocity.magnitude:F2}");
         }
     }
 
     /// <summary>
-    /// Appelé quand la hache est saisie
+    /// Appelé quand l'arme est saisie
     /// </summary>
     void OnGrabbed(SelectEnterEventArgs args)
     {
-        // Détacher si plantée
-        if (isStuck)
-        {
-            Unstick();
-        }
-
         isGrabbed = true;
-        ownerHand = args.interactorObject.transform;
 
         // Feedback visuel
         if (grabEffect != null)
@@ -166,16 +108,15 @@ public class XRThrowableWeapon : MonoBehaviour
         }
 
         if (showDebugInfo)
-            Debug.Log($"[XRThrowableAxe] Axe grabbed by {args.interactorObject.transform.name}");
+            Debug.Log($"[XRThrowableWeapon] Weapon grabbed by {args.interactorObject.transform.name}");
     }
 
     /// <summary>
-    /// Appelé quand la hache est lâchée/lancée
+    /// Appelé quand l'arme est lâchée/lancée
     /// </summary>
     void OnReleased(SelectExitEventArgs args)
     {
         isGrabbed = false;
-        throwTime = Time.time;
 
         // Obtenir la vélocité de l'interactor (main/controller)
         if (args.interactorObject is UnityEngine.XR.Interaction.Toolkit.Interactors.XRBaseInteractor interactor)
@@ -186,15 +127,11 @@ public class XRThrowableWeapon : MonoBehaviour
                 Vector3 throwVelocity = GetInteractorVelocity(interactor);
                 Vector3 throwAngularVelocity = GetInteractorAngularVelocity(interactor);
 
-                // Appliquer vélocité linéaire
                 rb.linearVelocity = throwVelocity * throwVelocityScale;
-                
-                // Appliquer rotation de hache (spin)
-                Vector3 axeSpinVector = transform.TransformDirection(spinAxis) * axeSpinForce;
-                rb.angularVelocity = (throwAngularVelocity * throwAngularVelocityScale) + axeSpinVector;
+                rb.angularVelocity = throwAngularVelocity * throwAngularVelocityScale;
 
                 if (showDebugInfo)
-                    Debug.Log($"[XRThrowableAxe] Thrown with velocity: {throwVelocity.magnitude:F2} m/s, spin: {axeSpinVector.magnitude:F2}");
+                    Debug.Log($"[XRThrowableWeapon] Thrown with velocity: {throwVelocity.magnitude:F2}");
             }
         }
 
@@ -243,14 +180,11 @@ public class XRThrowableWeapon : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        // Ignorer les collisions quand la hache est tenue
-        if (isGrabbed || isStuck) return;
+        // Ignorer les collisions quand l'arme est tenue
+        if (isGrabbed) return;
 
         // Vérifier la vélocité pour infliger des dégâts
         float impactVelocity = velocity.magnitude;
-
-        if (showDebugInfo)
-            Debug.Log($"[XRThrowableAxe] Impact with {collision.gameObject.name} at {impactVelocity:F2} m/s");
 
         if (impactVelocity >= minVelocityForDamage)
         {
@@ -262,7 +196,7 @@ public class XRThrowableWeapon : MonoBehaviour
                 health.TakeDamage(finalDamage);
 
                 if (showDebugInfo)
-                    Debug.Log($"[XRThrowableAxe] Dealt {finalDamage:F1} damage to {collision.gameObject.name}");
+                    Debug.Log($"[XRThrowableWeapon] Dealt {finalDamage:F1} damage to {collision.gameObject.name}");
             }
 
             // Effet d'impact
@@ -278,118 +212,6 @@ public class XRThrowableWeapon : MonoBehaviour
             {
                 audioSource.PlayOneShot(hitSound);
             }
-
-            // Vérifier si la hache peut se planter
-            if (canStickToSurfaces && impactVelocity >= minStickVelocity)
-            {
-                if (CanStickToObject(collision.gameObject))
-                {
-                    StickToSurface(collision);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Vérifie si la hache peut se planter dans cet objet
-    /// </summary>
-    bool CanStickToObject(GameObject obj)
-    {
-        foreach (string tag in stickableTags)
-        {
-            if (obj.CompareTag(tag))
-                return true;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// Plante la hache dans la surface
-    /// </summary>
-    void StickToSurface(Collision collision)
-    {
-        isStuck = true;
-        stuckParent = collision.transform;
-
-        // Désactiver la physique
-        rb.isKinematic = true;
-        rb.useGravity = false;
-
-        // Sauvegarder la position relative
-        stuckLocalPosition = stuckParent.InverseTransformPoint(transform.position);
-        stuckLocalRotation = Quaternion.Inverse(stuckParent.rotation) * transform.rotation;
-
-        // Parenter à l'objet
-        transform.SetParent(stuckParent);
-
-        if (showDebugInfo)
-            Debug.Log($"[XRThrowableAxe] Stuck to {stuckParent.name}");
-    }
-
-    /// <summary>
-    /// Détache la hache de la surface
-    /// </summary>
-    void Unstick()
-    {
-        if (!isStuck) return;
-
-        isStuck = false;
-        transform.SetParent(null);
-
-        // Réactiver la physique
-        rb.isKinematic = false;
-        rb.useGravity = true;
-
-        stuckParent = null;
-
-        if (showDebugInfo)
-            Debug.Log($"[XRThrowableAxe] Unstuck from surface");
-    }
-
-    /// <summary>
-    /// Maintient la position quand plantée
-    /// </summary>
-    void MaintainStuckPosition()
-    {
-        if (stuckParent == null)
-        {
-            Unstick();
-            return;
-        }
-
-        // Suivre la position/rotation du parent
-        transform.position = stuckParent.TransformPoint(stuckLocalPosition);
-        transform.rotation = stuckParent.rotation * stuckLocalRotation;
-    }
-
-    /// <summary>
-    /// Retour automatique vers la main
-    /// </summary>
-    void ReturnToHand()
-    {
-        if (ownerHand == null) return;
-
-        Unstick();
-
-        // Désactiver temporairement la gravité pour le retour
-        rb.useGravity = false;
-        
-        // Direction vers la main
-        Vector3 direction = (ownerHand.position - transform.position).normalized;
-        rb.linearVelocity = direction * returnSpeed;
-
-        if (showDebugInfo)
-            Debug.Log($"[XRThrowableAxe] Returning to hand");
-
-        // Réactiver la gravité après un court délai
-        Invoke(nameof(ReenableGravity), 0.5f);
-    }
-
-    void ReenableGravity()
-    {
-        if (rb != null && !isGrabbed)
-        {
-            rb.useGravity = true;
         }
     }
 
@@ -410,20 +232,6 @@ public class XRThrowableWeapon : MonoBehaviour
         {
             Gizmos.color = Color.red;
             Gizmos.DrawRay(transform.position, velocity.normalized * 0.5f);
-        }
-
-        // Visualiser l'axe de rotation
-        if (Application.isPlaying)
-        {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawRay(transform.position, transform.TransformDirection(spinAxis) * 0.3f);
-        }
-
-        // Visualiser si plantée
-        if (Application.isPlaying && isStuck)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, 0.1f);
         }
     }
 }

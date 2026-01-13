@@ -8249,6 +8249,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Labyrinthe
       objectReference: {fileID: 0}
+    - target: {fileID: 8403524162590059635, guid: b5301778f87f2774eaa8824e1af56d63, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8432217201348450909, guid: b5301778f87f2774eaa8824e1af56d63, type: 3}
       propertyPath: target
       value: 

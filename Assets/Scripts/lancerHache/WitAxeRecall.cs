@@ -16,7 +16,7 @@ public class WitAxeRecall : MonoBehaviour
     
     [Header("Wit.ai Settings")]
     [Tooltip("Mots à détecter pour rappeler la hache (vérification simple dans transcription)")]
-    public string[] triggerWords = new string[] { "hache", "axe", "rappelle", "reviens" };
+    public string[] triggerWords = new string[] { "hache", "axe", "rappelle", "reviens","h" };
     
     [Tooltip("Active automatiquement l'écoute en continu (RECOMMANDÉ pour mains uniquement)")]
     public bool continuousListening = true;
@@ -31,6 +31,9 @@ public class WitAxeRecall : MonoBehaviour
     [Tooltip("La hache à rappeler")]
     public XRThrowableWeapon axe;
     
+    [Tooltip("Caméra du joueur (pour savoir où est 'devant')")]
+    public Transform playerCamera;
+    
     [Tooltip("Main droite OVR")]
     public OVRHand rightHand;
     
@@ -38,6 +41,9 @@ public class WitAxeRecall : MonoBehaviour
     public Transform rightHandTransform;
 
     [Header("Recall Settings")]
+    [Tooltip("Distance devant le joueur où la hache apparaît")]
+    public float spawnDistanceInFront = 1.5f;
+    
     [Tooltip("Vitesse de rappel de la hache")]
     public float recallSpeed = 15f;
     
@@ -96,17 +102,49 @@ public class WitAxeRecall : MonoBehaviour
         }
 
         axeRigidbody = axe.GetComponent<Rigidbody>();
+        
+        // S'abonner aux événements de grab de la hache
+        var grabInteractable = axe.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+        if (grabInteractable != null)
+        {
+            grabInteractable.selectEntered.AddListener(OnAxeGrabbed);
+        }
+
+        // Chercher la caméra automatiquement si non assignée
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main?.transform;
+            if (playerCamera == null)
+            {
+                Debug.LogWarning("⚠️ [WitAxeRecall] Aucune caméra trouvée, cherche OVRCameraRig...");
+                OVRCameraRig cameraRig = FindFirstObjectByType<OVRCameraRig>();
+                if (cameraRig != null)
+                {
+                    playerCamera = cameraRig.centerEyeAnchor;
+                }
+            }
+        }
 
         if (rightHandTransform == null && rightHand != null)
         {
             rightHandTransform = rightHand.transform;
         }
 
-        if (rightHandTransform == null)
+        if (playerCamera == null)
         {
-            Debug.LogError("❌ [WitAxeRecall] Aucune main droite assignée!");
+            Debug.LogError("❌ [WitAxeRecall] Aucune caméra du joueur trouvée!");
             enabled = false;
             return;
+        }
+
+        // Désactiver la hache au départ
+        if (axe != null)
+        {
+            axe.gameObject.SetActive(false);
+            if (showDebugInfo)
+            {
+                Debug.Log("👻 [WitAxeRecall] Hache désactivée au démarrage");
+            }
         }
 
         // Audio
@@ -189,7 +227,7 @@ public class WitAxeRecall : MonoBehaviour
     /// </summary>
     void OnError(string error, string message)
     {
-        Debug.LogError($"❌ [WitAxeRecall] Erreur: {error} - {message}");
+        Debug.Log($"❌ [WitAxeRecall] Erreur: {error} - {message}");
     }
 
     /// <summary>
@@ -317,46 +355,66 @@ public class WitAxeRecall : MonoBehaviour
     }
 
     /// <summary>
-    /// Démarre le rappel de la hache
+    /// Démarre le rappel de la hache - Apparition instantanée devant le joueur
     /// </summary>
     void StartRecall()
     {
-        if (axe == null || axeRigidbody == null || rightHandTransform == null)
+        if (axe == null || axeRigidbody == null || playerCamera == null)
         {
             if (showDebugInfo)
                 Debug.LogWarning("⚠️ [WitAxeRecall] Impossible de rappeler");
             return;
         }
 
-        float distance = Vector3.Distance(axe.transform.position, rightHandTransform.position);
-        if (distance < autoCatchDistance)
+        // Activer la hache si elle est désactivée
+        if (!axe.gameObject.activeSelf)
         {
-            if (showDebugInfo)
-                Debug.Log("ℹ️ [WitAxeRecall] La hache est déjà proche");
-            return;
+            axe.gameObject.SetActive(true);
         }
 
-        isRecalling = true;
-        wasGravityEnabled = axeRigidbody.useGravity;
+        // Calculer la position devant le joueur à la même hauteur
+        Vector3 spawnPosition = playerCamera.position + playerCamera.forward * spawnDistanceInFront;
+        
+        // Positionner la hache
+        axe.transform.position = spawnPosition;
+        axe.transform.rotation = playerCamera.rotation;
 
-        axeRigidbody.useGravity = false;
+        // Réinitialiser la physique
         axeRigidbody.linearVelocity = Vector3.zero;
         axeRigidbody.angularVelocity = Vector3.zero;
+        axeRigidbody.useGravity = false;
+        axeRigidbody.isKinematic = true; // Rendre kinematic pour éviter qu'elle ne tombe
 
-        if (recallLine != null)
-            recallLine.enabled = true;
-
+        // Effets visuels et sonores
         if (recallEffect != null)
         {
-            recallEffect.transform.position = axe.transform.position;
+            recallEffect.transform.position = spawnPosition;
             recallEffect.Play();
         }
 
         if (audioSource != null && recallSound != null)
             audioSource.PlayOneShot(recallSound);
 
+        if (audioSource != null && catchSound != null)
+            audioSource.PlayOneShot(catchSound);
+
         if (showDebugInfo)
-            Debug.Log("⚔️ [WitAxeRecall] Rappel de la hache!");
+            Debug.Log("⚔️ [WitAxeRecall] Hache apparue devant le joueur!");
+    }
+
+    /// <summary>
+    /// Appelé quand le joueur attrape la hache - Réactive la physique
+    /// </summary>
+    void OnAxeGrabbed(UnityEngine.XR.Interaction.Toolkit.SelectEnterEventArgs args)
+    {
+        if (axeRigidbody != null)
+        {
+            axeRigidbody.isKinematic = false;
+            axeRigidbody.useGravity = true;
+            
+            if (showDebugInfo)
+                Debug.Log("✋ [WitAxeRecall] Hache attrapée - Physique réactivée!");
+        }
     }
 
     void Update()
@@ -427,6 +485,16 @@ public class WitAxeRecall : MonoBehaviour
 
     void OnDestroy()
     {
+        // Désabonner des événements de la hache
+        if (axe != null)
+        {
+            var grabInteractable = axe.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+            if (grabInteractable != null)
+            {
+                grabInteractable.selectEntered.RemoveListener(OnAxeGrabbed);
+            }
+        }
+        
         if (voiceExperience != null && voiceExperience.VoiceEvents != null)
         {
             voiceExperience.VoiceEvents.OnResponse.RemoveListener(OnWitResponse);

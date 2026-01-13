@@ -890,13 +890,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::XRThrowableWeapon
   damage: 50
   minVelocityForDamage: 2
+  axeMass: 1.5
   throwVelocityScale: 1.5
   throwAngularVelocityScale: 1
+  axeSpinForce: 10
+  spinAxis: {x: 1, y: 0, z: 0}
+  canStickToSurfaces: 1
+  minStickVelocity: 4
+  stickableTags:
+  - Enemy
+  - Wood
+  - Target
+  - Wall
   grabEffect: {fileID: 0}
   hitEffect: {fileID: 0}
   grabSound: {fileID: 0}
   throwSound: {fileID: 0}
   hitSound: {fileID: 0}
+  autoReturn: 0
+  returnTime: 3
+  returnSpeed: 10
   showDebugInfo: 0
 --- !u!114 &205630979
 MonoBehaviour:
@@ -1054,8 +1067,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 205630977}
   serializedVersion: 5
-  m_Mass: 50
-  m_LinearDamping: 10
+  m_Mass: 1.5
+  m_LinearDamping: 0.5
   m_AngularDamping: 0.5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -5331,11 +5344,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1390590571}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &1280765322 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
-  m_PrefabInstance: {fileID: 1399060589}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1288247557
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5921,7 +5929,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 2103371507}
+    m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalScale.x
@@ -5937,15 +5945,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 31.435
+      value: 32.78
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.18760699
+      value: 0.252393
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -9.515102
+      value: -10.922102
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5953,7 +5961,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalRotation.y
@@ -5961,7 +5969,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1bf63c0899d49114e9e0a11b3dbb5187, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -8295,41 +8303,12 @@ MonoBehaviour:
   - axe
   - rappelle
   - reviens
-  - h
   continuousListening: 1
   listeningInterval: 1.5
   recallCooldown: 3
   axe: {fileID: 205630978}
-  playerCamera: {fileID: 963678878}
-  rightHand: {fileID: 1495788884}
+  rightHand: {fileID: 0}
   rightHandTransform: {fileID: 1409107527}
-  spawnDistanceInFront: 1.5
-  spawnHeightOffset: -0.5
-  spawnAnimationDuration: 0.5
-  spawnScaleCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   recallSpeed: 15
   autoCatchDistance: 0.3
   magneticForce: 50
@@ -8983,7 +8962,6 @@ Transform:
   - {fileID: 1596406396}
   - {fileID: 205630984}
   - {fileID: 786505404}
-  - {fileID: 1280765322}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2143314263
@@ -9197,3 +9175,4 @@ SceneRoots:
   - {fileID: 47080594}
   - {fileID: 1490212533}
   - {fileID: 1925530610}
+  - {fileID: 1399060589}
