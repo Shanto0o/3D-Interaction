@@ -44,6 +44,9 @@ public class WitAxeRecall : MonoBehaviour
     [Tooltip("Distance devant le joueur où la hache apparaît")]
     public float spawnDistanceInFront = 1.5f;
     
+    [Tooltip("Hauteur au-dessus de la caméra")]
+    public float spawnHeightAboveCamera = 0.3f;
+    
     [Tooltip("Vitesse de rappel de la hache")]
     public float recallSpeed = 15f;
     
@@ -374,16 +377,17 @@ public class WitAxeRecall : MonoBehaviour
 
         // Calculer la position devant le joueur à la même hauteur
         Vector3 spawnPosition = playerCamera.position + playerCamera.forward * spawnDistanceInFront;
+        spawnPosition.y += spawnHeightAboveCamera; // Un peu plus haut
         
         // Positionner la hache
         axe.transform.position = spawnPosition;
         axe.transform.rotation = playerCamera.rotation;
 
-        // Réinitialiser la physique
+        // Réinitialiser la physique avec gravité activée
         axeRigidbody.linearVelocity = Vector3.zero;
         axeRigidbody.angularVelocity = Vector3.zero;
-        axeRigidbody.useGravity = false;
-        axeRigidbody.isKinematic = true; // Rendre kinematic pour éviter qu'elle ne tombe
+        axeRigidbody.useGravity = true;
+        axeRigidbody.isKinematic = false; // Physique active pour que la gravité fonctionne
 
         // Effets visuels et sonores
         if (recallEffect != null)
@@ -407,14 +411,9 @@ public class WitAxeRecall : MonoBehaviour
     /// </summary>
     void OnAxeGrabbed(UnityEngine.XR.Interaction.Toolkit.SelectEnterEventArgs args)
     {
-        if (axeRigidbody != null)
-        {
-            axeRigidbody.isKinematic = false;
-            axeRigidbody.useGravity = true;
-            
-            if (showDebugInfo)
-                Debug.Log("✋ [WitAxeRecall] Hache attrapée - Physique réactivée!");
-        }
+        // La physique est déjà active, pas besoin de la réactiver
+        if (showDebugInfo)
+            Debug.Log("✋ [WitAxeRecall] Hache attrapée!");
     }
 
     void Update()
