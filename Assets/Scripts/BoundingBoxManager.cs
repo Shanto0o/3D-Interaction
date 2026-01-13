@@ -22,10 +22,6 @@ public class BoundingBoxManager : MonoBehaviour
             box.OnPlayerEnter += HandlePlayerEnter;
             box.OnPlayerExit += HandlePlayerExit;
         }
-        
-        // Afficher le texte au démarrage
-        textDisplay.gameObject.SetActive(true);
-        textDisplay.text = "Allez dans la cuisine.";
     }
 
     private void OnDestroy()

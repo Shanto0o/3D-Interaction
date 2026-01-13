@@ -10,10 +10,19 @@ public class Target : MonoBehaviour, IHealth
     [Tooltip("Effet de particules lors de l'impact")]
     public ParticleSystem hitEffect;
 
+    [Header("Colors")]
+    [Tooltip("Couleur initiale (rouge)")]
+    public Color initialColor = Color.red;
+    
+    [Tooltip("Couleur après impact (vert)")]
+    public Color hitColor = Color.green;
+    
+    [Tooltip("Intensité d'émission")]
+    public float emissionIntensity = 2f;
+
     private TargetGame gameManager;
-    private bool isCorrectTarget = false;
+    private bool hasBeenHit = false;
     private Material targetMaterial;
-    private Color originalColor;
 
     void Awake()
     {
@@ -25,8 +34,13 @@ public class Target : MonoBehaviour, IHealth
         if (targetRenderer != null)
         {
             targetMaterial = targetRenderer.material;
-            originalColor = targetMaterial.color;
         }
+    }
+
+    void Start()
+    {
+        // Initialiser en rouge
+        UpdateVisual(initialColor);
     }
 
     /// <summary>
@@ -38,27 +52,9 @@ public class Target : MonoBehaviour, IHealth
     }
 
     /// <summary>
-    /// Définit cette cible comme étant la bonne à toucher
-    /// </summary>
-    public void SetAsCorrectTarget(Color color, float emissionIntensity)
-    {
-        isCorrectTarget = true;
-        UpdateVisual(color, emissionIntensity);
-    }
-
-    /// <summary>
-    /// Définit cette cible comme étant une mauvaise cible
-    /// </summary>
-    public void SetAsWrongTarget(Color color, float emissionIntensity)
-    {
-        isCorrectTarget = false;
-        UpdateVisual(color, emissionIntensity);
-    }
-
-    /// <summary>
     /// Met à jour l'apparence de la cible
     /// </summary>
-    void UpdateVisual(Color color, float emissionIntensity)
+    void UpdateVisual(Color color)
     {
         if (targetMaterial == null) return;
 
@@ -77,19 +73,29 @@ public class Target : MonoBehaviour, IHealth
     /// </summary>
     public void TakeDamage(float damage)
     {
+        // Ne rien faire si déjà touchée
+        if (hasBeenHit)
+            return;
+
+        // Marquer comme touchée
+        hasBeenHit = true;
+
+        // Changer la couleur en vert
+        UpdateVisual(hitColor);
+
         // Effet de particules
         if (hitEffect != null)
         {
             hitEffect.Play();
         }
 
-        // Notifier le game manager
+        // Notifier le game manager si présent
         if (gameManager != null)
         {
             gameManager.OnTargetHit(this);
         }
 
-        Debug.Log($"[Target] {gameObject.name} touched! Is correct: {isCorrectTarget}");
+        Debug.Log($"[Target] {gameObject.name} touchée ! Passage au vert.");
     }
 
     void OnDestroy()

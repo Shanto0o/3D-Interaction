@@ -91,16 +91,8 @@ public class TargetGame : MonoBehaviour
     /// </summary>
     void SelectNewTarget()
     {
-        // Réinitialiser toutes les cibles
-        foreach (var target in targets)
-        {
-            if (target != null)
-                target.SetAsWrongTarget(wrongTargetColor, emissionIntensity);
-        }
-
         // Choisir une cible au hasard
         currentCorrectTarget = targets[Random.Range(0, targets.Count)];
-        currentCorrectTarget.SetAsCorrectTarget(correctTargetColor, emissionIntensity);
 
         if (showDebugInfo)
             Debug.Log($"[TargetGame] Nouvelle cible : {currentCorrectTarget.name}");
