@@ -39,6 +39,28 @@ public class SwordGrabInteraction : MonoBehaviour
     [Header("Visual Feedback")]
     public bool showChargingEffect = true;
     public float maxChargeScale = 0.3f;
+    [Tooltip("Activer l'effet de scintillement quand l'épée est au sol")]
+    public bool showGlowEffect = true;
+    [Tooltip("Vitesse du scintillement")]
+    public float glowSpeed = 2f;
+    [Tooltip("Intensité du scintillement")]
+    public float glowIntensity = 2f;
+    [Tooltip("Couleur du scintillement")]
+    public Color glowColor = Color.yellow;
+    
+    [Header("UI Instructions")]
+    [Tooltip("Afficher les instructions VR")]
+    public bool showInstructions = true;
+    [Tooltip("Caméra VR pour attacher le Canvas d'instructions")]
+    public Camera vrCamera;
+    [Tooltip("Distance du texte par rapport à l'épée")]
+    public float instructionHeight = 0.5f;
+    
+    [Header("Audio")]
+    [Tooltip("Son de chargement (loop pendant le pinch)")]
+    public AudioClip chargingSound;
+    [Tooltip("Son de validation quand l'épée s'attache à la main")]
+    public AudioClip attachSound;
     
     [Header("Debug")]
     public bool showDebugInfo = true;
@@ -46,6 +68,8 @@ public class SwordGrabInteraction : MonoBehaviour
     // État privé
     private bool isGrabbing = false;
     private bool isPinching = false;
+    private AudioSource audioSource;
+    private bool isPlayingChargingSound = false;
     private float currentChargeTime = 0f;
     private bool isFullyCharged = false;
     private bool isAttached = false;
@@ -54,6 +78,15 @@ public class SwordGrabInteraction : MonoBehaviour
     private GameObject chargingVisual;
     private Vector3 originalPosition;
     private Quaternion originalRotation;
+    
+    // Scintillement
+    private Renderer[] swordRenderers;
+    private Material[] originalMaterials;
+    private bool isGlowing = false;
+    
+    // UI Instructions
+    private Canvas instructionCanvas;
+    private UnityEngine.UI.Text instructionText;
     
     // Pour le tracking de vélocité (inertie)
     private Vector3 previousHandPosition;
@@ -84,6 +117,14 @@ public class SwordGrabInteraction : MonoBehaviour
         originalPosition = transform.position;
         originalRotation = transform.rotation;
         
+        // Ajouter un AudioSource si des sons sont configurés
+        if (chargingSound != null || attachSound != null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 1.0f; // Son 3D
+        }
+        
         // Configurer le Rigidbody pour la physique avec inertie
         if (swordRigidbody != null)
         {
@@ -97,6 +138,18 @@ public class SwordGrabInteraction : MonoBehaviour
         
         // Créer la visualisation de la zone
         CreateZoneVisualization();
+        
+        // Initialiser les renderers pour l'effet de scintillement
+        if (showGlowEffect)
+        {
+            InitializeGlowEffect();
+        }
+        
+        // Créer le Canvas d'instructions
+        if (showInstructions)
+        {
+            CreateInstructionCanvas();
+        }
         
         if (showDebugInfo)
         {
@@ -131,6 +184,12 @@ public class SwordGrabInteraction : MonoBehaviour
             if (showDebugInfo && Time.frameCount % 300 == 0)
                 Debug.LogWarning("⚠️ Main droite non assignée!");
             return;
+        }
+        
+        // Mise à jour de l'effet de scintillement quand l'épée n'est pas attachée
+        if (!isAttached && showGlowEffect)
+        {
+            UpdateGlowEffect();
         }
         
         // Si l'épée est attachée, la faire suivre la main
@@ -242,6 +301,15 @@ public class SwordGrabInteraction : MonoBehaviour
             }
         }
         
+        // Jouer le son de chargement en boucle
+        if (chargingSound != null && audioSource != null && !isPlayingChargingSound)
+        {
+            audioSource.clip = chargingSound;
+            audioSource.loop = true;
+            audioSource.Play();
+            isPlayingChargingSound = true;
+        }
+        
         if (showDebugInfo)
         {
             Debug.Log("🔄 CHARGEMENT DÉMARRÉ - Maintenez le grab/pinch pendant 2 secondes!");
@@ -286,6 +354,14 @@ public class SwordGrabInteraction : MonoBehaviour
         isGrabbing = false;
         isPinching = false;
         
+        // Arrêter le son de chargement
+        if (isPlayingChargingSound && audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+            isPlayingChargingSound = false;
+        }
+        
         if (chargingVisual != null)
         {
             Renderer renderer = chargingVisual.GetComponent<Renderer>();
@@ -327,6 +403,34 @@ public class SwordGrabInteraction : MonoBehaviour
         if (chargingVisual != null)
         {
             chargingVisual.SetActive(false);
+        }
+        
+        // Cacher les instructions
+        if (instructionCanvas != null)
+        {
+            instructionCanvas.gameObject.SetActive(false);
+        }
+        
+        // Désactiver le scintillement
+        if (isGlowing)
+        {
+            DisableGlowEffect();
+        }
+        
+        // Arrêter le son de chargement et jouer le son de validation
+        if (audioSource != null)
+        {
+            if (isPlayingChargingSound)
+            {
+                audioSource.Stop();
+                audioSource.loop = false;
+                isPlayingChargingSound = false;
+            }
+            
+            if (attachSound != null)
+            {
+                audioSource.PlayOneShot(attachSound);
+            }
         }
         
         if (showDebugInfo)
@@ -444,6 +548,12 @@ public class SwordGrabInteraction : MonoBehaviour
             chargingVisual.transform.localScale = Vector3.one * grabZoneRadius * 2;
         }
         
+        // Montrer les instructions
+        if (instructionCanvas != null)
+        {
+            instructionCanvas.gameObject.SetActive(true);
+        }
+        
         if (showDebugInfo)
         {
             Debug.Log("🔓 Épée détachée");
@@ -455,5 +565,155 @@ public class SwordGrabInteraction : MonoBehaviour
         // Dessiner la zone dans l'éditeur
         Gizmos.color = new Color(0, 1, 1, 0.3f);
         Gizmos.DrawWireSphere(transform.position, grabZoneRadius);
+    }
+    
+    void InitializeGlowEffect()
+    {
+        // Récupérer tous les renderers de l'épée
+        swordRenderers = GetComponentsInChildren<Renderer>();
+        originalMaterials = new Material[swordRenderers.Length];
+        
+        for (int i = 0; i < swordRenderers.Length; i++)
+        {
+            // Ignorer le chargingVisual
+            if (swordRenderers[i].gameObject == chargingVisual)
+                continue;
+                
+            originalMaterials[i] = swordRenderers[i].material;
+            
+            // Activer l'émission si le matériau le supporte
+            if (swordRenderers[i].material.HasProperty("_EmissionColor"))
+            {
+                swordRenderers[i].material.EnableKeyword("_EMISSION");
+            }
+        }
+        
+        if (showDebugInfo)
+        {
+            Debug.Log($"✨ Effet de scintillement initialisé sur {swordRenderers.Length} renderers");
+        }
+    }
+    
+    void UpdateGlowEffect()
+    {
+        if (swordRenderers == null || swordRenderers.Length == 0) return;
+        
+        // Calculer l'intensité du scintillement avec une courbe sinusoïdale
+        float glow = (Mathf.Sin(Time.time * glowSpeed) + 1f) / 2f; // Varie entre 0 et 1
+        
+        foreach (Renderer renderer in swordRenderers)
+        {
+            if (renderer == null || renderer.gameObject == chargingVisual)
+                continue;
+                
+            if (renderer.material.HasProperty("_EmissionColor"))
+            {
+                renderer.material.SetColor("_EmissionColor", glowColor * glow * glowIntensity);
+                isGlowing = true;
+            }
+        }
+    }
+    
+    void DisableGlowEffect()
+    {
+        if (swordRenderers == null) return;
+        
+        foreach (Renderer renderer in swordRenderers)
+        {
+            if (renderer == null || renderer.gameObject == chargingVisual)
+                continue;
+                
+            if (renderer.material.HasProperty("_EmissionColor"))
+            {
+                renderer.material.SetColor("_EmissionColor", Color.black);
+            }
+        }
+        
+        isGlowing = false;
+    }
+    
+    void CreateInstructionCanvas()
+    {
+        // Trouver la caméra VR automatiquement si non assignée
+        if (vrCamera == null)
+        {
+            vrCamera = Camera.main;
+            if (vrCamera == null)
+            {
+                Debug.LogWarning("⚠️ Aucune caméra VR trouvée pour les instructions");
+                return;
+            }
+        }
+        
+        // Créer un Canvas World Space au-dessus de l'épée
+        GameObject canvasObj = new GameObject("SwordInstructionCanvas");
+        canvasObj.transform.SetParent(transform);
+        canvasObj.transform.localPosition = new Vector3(0, instructionHeight, 0);
+        canvasObj.transform.localRotation = Quaternion.identity;
+        
+        instructionCanvas = canvasObj.AddComponent<Canvas>();
+        instructionCanvas.renderMode = RenderMode.WorldSpace;
+        instructionCanvas.worldCamera = vrCamera;
+        
+        // Configurer la taille du Canvas
+        RectTransform canvasRect = canvasObj.GetComponent<RectTransform>();
+        canvasRect.sizeDelta = new Vector2(2f, 0.5f);
+        canvasRect.localScale = Vector3.one * 0.001f; // Échelle pour adapter à la taille VR
+        
+        // Ajouter CanvasScaler
+        var scaler = canvasObj.AddComponent<UnityEngine.UI.CanvasScaler>();
+        scaler.dynamicPixelsPerUnit = 10;
+        
+        // Ajouter GraphicRaycaster
+        canvasObj.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+        
+        // Créer le texte
+        GameObject textObj = new GameObject("InstructionText");
+        textObj.transform.SetParent(canvasObj.transform, false);
+        
+        instructionText = textObj.AddComponent<UnityEngine.UI.Text>();
+        instructionText.text = "Pince ta main gauche\npendant 2s pour\nrécupérer l'épée";
+        instructionText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        instructionText.fontSize = 80;
+        instructionText.fontStyle = FontStyle.Bold;
+        instructionText.alignment = TextAnchor.MiddleCenter;
+        instructionText.color = Color.yellow;
+        
+        // Ajouter un contour pour meilleure lisibilité
+        var outline = textObj.AddComponent<UnityEngine.UI.Outline>();
+        outline.effectColor = Color.black;
+        outline.effectDistance = new Vector2(3, -3);
+        
+        RectTransform textRect = textObj.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = Vector2.zero;
+        textRect.offsetMax = Vector2.zero;
+        
+        // Ajouter un script pour faire face à la caméra
+        var lookAt = canvasObj.AddComponent<LookAtCamera>();
+        lookAt.camera = vrCamera;
+        
+        if (showDebugInfo)
+        {
+            Debug.Log("📝 Instructions VR créées pour l'épée");
+        }
+    }
+}
+
+/// <summary>
+/// Script simple pour faire face à la caméra en permanence
+/// </summary>
+public class LookAtCamera : MonoBehaviour
+{
+    public Camera camera;
+    
+    void Update()
+    {
+        if (camera != null)
+        {
+            transform.LookAt(transform.position + camera.transform.rotation * Vector3.forward,
+                           camera.transform.rotation * Vector3.up);
+        }
     }
 }

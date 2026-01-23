@@ -16,6 +16,15 @@ public class Crystal : MonoBehaviour
     [Tooltip("Matériau à appliquer pendant le chargement")]
     public Material chargingMaterial;
     
+    [Header("Audio")]
+    [Tooltip("Son joué pendant que le cristal se fait casser (loop)")]
+    public AudioClip chargingSound;
+    [Tooltip("Volume du son de chargement (0 à 5 pour amplification)")]
+    [Range(0f, 5f)]
+    public float chargingVolume = 5.0f;
+    [Tooltip("Son joué quand le cristal casse")]
+    public AudioClip breakSound;
+    
     [Header("Debug")]
     public bool showDebugInfo = true;
     
@@ -25,6 +34,8 @@ public class Crystal : MonoBehaviour
     private Renderer crystalRenderer;
     private Material originalMaterial;
     private bool isBroken = false;
+    private AudioSource audioSource;
+    private bool isPlayingChargingSound = false;
     
     // Event pour notifier la destruction du cristal
     public static event Action<Crystal> OnCrystalDestroyed;
@@ -35,6 +46,14 @@ public class Crystal : MonoBehaviour
         if (crystalRenderer != null)
         {
             originalMaterial = crystalRenderer.material;
+        }
+        
+        // Ajouter un AudioSource si des sons sont configurés
+        if (chargingSound != null || breakSound != null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 1.0f; // Son 3D
         }
         
         if (showDebugInfo)
@@ -55,6 +74,14 @@ public class Crystal : MonoBehaviour
                 RestoreOriginalMaterial();
             }
             
+            // Arrêter le son de chargement si le cristal n'est plus visé
+            if (isPlayingChargingSound && audioSource != null)
+            {
+                audioSource.Stop();
+                audioSource.loop = false;
+                isPlayingChargingSound = false;
+            }
+            
             UpdateVisualFeedback();
         }
         
@@ -71,6 +98,16 @@ public class Crystal : MonoBehaviour
         
         isBeingCharged = true;
         currentChargeTime += Time.deltaTime;
+        
+        // Démarrer le son de chargement si ce n'est pas déjà fait
+        if (!isPlayingChargingSound && chargingSound != null && audioSource != null)
+        {
+            audioSource.clip = chargingSound;
+            audioSource.loop = true;
+            audioSource.volume = chargingVolume;
+            audioSource.Play();
+            isPlayingChargingSound = true;
+        }
         
         if (showDebugInfo && Time.frameCount % 30 == 0)
         {
@@ -134,6 +171,20 @@ public class Crystal : MonoBehaviour
             Debug.Log($"💥💥💥 CRISTAL CASSÉ: {gameObject.name}");
         }
         
+        // Arrêter le son de chargement
+        if (isPlayingChargingSound && audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+            isPlayingChargingSound = false;
+        }
+        
+        // Jouer le son de destruction
+        if (breakSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(breakSound);
+        }
+        
         // Déclencher l'effet de particules
         if (breakEffect != null)
         {
@@ -144,8 +195,8 @@ public class Crystal : MonoBehaviour
         // Notifier tous les écouteurs (notamment le boss)
         OnCrystalDestroyed?.Invoke(this);
         
-        // Détruire le cristal
-        Destroy(gameObject);
+        // Détruire le cristal après un court délai pour laisser le son se jouer
+        Destroy(gameObject, breakSound != null ? Mathf.Min(breakSound.length, 2f) : 0f);
     }
     
     void OnDrawGizmos()

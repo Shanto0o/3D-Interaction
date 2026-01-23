@@ -26,6 +26,10 @@ public class TriangleLaser : MonoBehaviour
     [Range(0.01f, 0.15f)]
     public float touchDistanceThreshold = 0.08f;
 
+    [Header("Audio")]
+    [Tooltip("Son joué quand le laser est lancé")]
+    public AudioClip laserFireSound;
+
     [Header("Debug")]
     public bool showDebugInfo = false;
     public bool showDebugGizmos = true;
@@ -35,6 +39,7 @@ public class TriangleLaser : MonoBehaviour
     private ParticleSystem laserEffect;
     private LineRenderer laserBeam;
     private bool wasPinching = false;
+    private AudioSource audioSource;
 
     void Start()
     {
@@ -49,6 +54,14 @@ public class TriangleLaser : MonoBehaviour
         laserBeam.endColor = Color.white;
         laserBeam.positionCount = 2;
         laserBeam.enabled = false;
+        
+        // Ajouter un AudioSource si un son est configuré
+        if (laserFireSound != null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.spatialBlend = 1.0f; // Son 3D
+        }
     }
 
     void Update()
@@ -214,6 +227,14 @@ public class TriangleLaser : MonoBehaviour
 
         // Activer le faisceau laser
         laserBeam.enabled = true;
+        
+        // Jouer le son du laser en boucle
+        if (laserFireSound != null && audioSource != null)
+        {
+            audioSource.clip = laserFireSound;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
 
         if (showDebugInfo)
         {
@@ -364,6 +385,13 @@ public class TriangleLaser : MonoBehaviour
 
         // Désactiver le faisceau
         laserBeam.enabled = false;
+        
+        // Arrêter le son du laser
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+        }
 
         if (showDebugInfo)
         {

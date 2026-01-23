@@ -29,6 +29,8 @@ public class BossCube : MonoBehaviour
     public AudioClip hitSound;
     [Tooltip("Son joué quand le boss meurt")]
     public AudioClip deathSound;
+    [Tooltip("Son d'ambiance pour la salle du boss (loop)")]
+    public AudioClip ambientSound;
     
     [Header("Debug")]
     public bool showDebugInfo = true;
@@ -39,6 +41,7 @@ public class BossCube : MonoBehaviour
     private Renderer bossRenderer;
     private Color originalColor;
     private AudioSource audioSource;
+    private AudioSource ambientAudioSource;
     private bool isFlashing = false;
     private float flashTimer = 0f;
     private Color flashColor;
@@ -77,6 +80,19 @@ public class BossCube : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
             audioSource.playOnAwake = false;
             audioSource.spatialBlend = 1.0f; // Son 3D
+        }
+        
+        // Ajouter un AudioSource pour l'ambiance (loop)
+        if (ambientSound != null)
+        {
+            ambientAudioSource = gameObject.AddComponent<AudioSource>();
+            ambientAudioSource.clip = ambientSound;
+            ambientAudioSource.loop = true;
+            ambientAudioSource.playOnAwake = true;
+            ambientAudioSource.spatialBlend = 0.5f; // Mi-2D mi-3D pour l'ambiance
+            ambientAudioSource.volume = 0.5f;
+            ambientAudioSource.Play();
+            Debug.Log("🎵 Son d'ambiance de la salle du boss lancé");
         }
         
         if (showDebugInfo)
@@ -278,6 +294,12 @@ public class BossCube : MonoBehaviour
         if (showDebugInfo)
         {
             Debug.Log("💀 Boss détruit!");
+        }
+        
+        // Arrêter le son d'ambiance
+        if (ambientAudioSource != null)
+        {
+            ambientAudioSource.Stop();
         }
         
         // Jouer le son de mort
