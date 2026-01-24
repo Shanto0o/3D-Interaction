@@ -48,6 +48,34 @@ public class BowController : MonoBehaviour
     
     [Tooltip("Multiplicateur de force basé sur la traction")]
     public float forceMultiplier = 2f;
+    
+    [Tooltip("Offset de rotation de l'arc par rapport à la main (X, Y, Z en degrés)")]
+    public Vector3 bowRotationOffset = new Vector3(0f, 30f, 90f);
+    
+    [Tooltip("Offset de position de l'arc par rapport à la main (X, Y, Z en mètres)")]
+    public Vector3 bowPositionOffset = new Vector3(0.1f, 0f, 0.1f);
+    
+    [Tooltip("Correction de rotation de la flèche (X, Y, Z en degrés) - Ajustez si la flèche pointe dans la mauvaise direction")]
+    public Vector3 arrowRotationCorrection = new Vector3(0f, 0f, 0f);
+    
+    [Tooltip("Offset de position de la flèche par rapport au spawn point (X, Y, Z en mètres)")]
+    public Vector3 arrowPositionOffset = new Vector3(0f, 0f, 0f);
+    
+    [Tooltip("La flèche suit la main droite pendant le bandage")]
+    public bool arrowFollowsHand = true;
+    
+    [Tooltip("Distance minimale de traction pour pouvoir tirer (en mètres)")]
+    public float minDrawDistanceToShoot = 0.1f;
+    
+    [Tooltip("Longueur de la flèche pour calculer la position de l'arrière (en mètres)")]
+    public float arrowLength = 0.5f;
+    
+    [Tooltip("La flèche s'oriente dans la direction de son mouvement")]
+    public bool arrowFollowsVelocity = true;
+    
+    [Tooltip("Utiliser moins de gravité pour une trajectoire plus droite")]
+    [Range(0f, 1f)]
+    public float gravityScale = 0.3f;
 
     [Header("Visual Feedback")]
     [Tooltip("Couleur de l'arc quand tenu")]
@@ -73,6 +101,7 @@ public class BowController : MonoBehaviour
     private Vector3 initialStringPosition;
     private float currentDrawAmount = 0f;
     private Color originalBowColor;
+    private bool wasLeftPinching = false;
 
     void Start()
     {
@@ -125,24 +154,37 @@ public class BowController : MonoBehaviour
 
     void Update()
     {
-        // Vérifier le pinch de la main gauche pour tenir l'arc
+        // Détecter le pinch de la main gauche (toggle pour tenir/relâcher l'arc)
         bool leftPinching = GetPinchStrength(leftHand) > pinchThreshold;
         
-        if (leftPinching && !isBowHeld)
+        // Détecter le moment où le pinch commence (transition de false à true)
+        if (leftPinching && !wasLeftPinching)
         {
-            GrabBow();
+            // Toggle : si l'arc est tenu, le relâcher, sinon l'attraper
+            if (isBowHeld)
+            {
+                ReleaseBow();
+            }
+            else
+            {
+                GrabBow();
+            }
         }
-        else if (!leftPinching && isBowHeld)
-        {
-            ReleaseBow();
-        }
+        
+        // Mettre à jour l'état précédent
+        wasLeftPinching = leftPinching;
 
         // Si l'arc est tenu, gérer le tir
         if (isBowHeld)
         {
-            // Suivre la main gauche
-            transform.position = leftHandTransform.position;
-            transform.rotation = leftHandTransform.rotation;
+            // Appliquer la rotation avec offset pour que l'arc soit bien orienté
+            Quaternion handRotation = leftHandTransform.rotation;
+            Quaternion offsetRotation = Quaternion.Euler(bowRotationOffset);
+            transform.rotation = handRotation * offsetRotation;
+            
+            // Suivre la main gauche avec offset de position
+            Vector3 offsetPosition = leftHandTransform.TransformPoint(bowPositionOffset);
+            transform.position = offsetPosition;
 
             // Vérifier le pinch de la main droite pour tirer
             bool rightPinching = GetPinchStrength(rightHand) > pinchThreshold;
@@ -244,10 +286,25 @@ public class BowController : MonoBehaviour
         isDrawing = true;
 
         // Créer une flèche
-        if (arrowPrefab != null && arrowSpawnPoint != null)
+        if (arrowPrefab != null && arrowSpawnPoint != null && bowString != null)
         {
-            currentArrow = Instantiate(arrowPrefab, arrowSpawnPoint.position, arrowSpawnPoint.rotation);
-            currentArrow.transform.SetParent(arrowSpawnPoint);
+            // Appliquer la correction de rotation
+            Quaternion correctedRotation = arrowSpawnPoint.rotation * Quaternion.Euler(arrowRotationCorrection);
+            
+            // Calculer la position : l'arrière de la flèche doit être sur la corde
+            // Position de la corde dans l'espace monde
+            Vector3 stringWorldPos = bowString.position;
+            
+            // Direction vers l'avant de l'arc
+            Vector3 forwardDir = correctedRotation * Vector3.forward;
+            
+            // Position de la flèche : arrière sur la corde, pointe vers l'avant
+            Vector3 arrowPosition = stringWorldPos + forwardDir * arrowLength;
+            
+            currentArrow = Instantiate(arrowPrefab, arrowPosition, correctedRotation);
+            
+            // Ne pas parenter pour un meilleur contrôle de position
+            currentArrow.transform.SetParent(null);
         }
 
         if (audioSource != null && drawBowSound != null)
@@ -280,6 +337,23 @@ public class BowController : MonoBehaviour
             bowString.localPosition = stringPos;
         }
 
+        // Positionner la flèche : l'arrière suit la corde
+        if (currentArrow != null && bowString != null && arrowSpawnPoint != null)
+        {
+            // Position de la corde dans l'espace monde
+            Vector3 stringWorldPos = bowString.position;
+            
+            // Direction de tir avec correction
+            Quaternion correctedRotation = arrowSpawnPoint.rotation * Quaternion.Euler(arrowRotationCorrection);
+            Vector3 forwardDir = correctedRotation * Vector3.forward;
+            
+            // L'arrière de la flèche est sur la corde, la pointe est devant
+            Vector3 arrowPosition = stringWorldPos + forwardDir * arrowLength;
+            
+            currentArrow.transform.position = arrowPosition;
+            currentArrow.transform.rotation = correctedRotation;
+        }
+
         // Changer la couleur
         if (bowRenderer != null)
         {
@@ -297,6 +371,34 @@ public class BowController : MonoBehaviour
             isDrawing = false;
             return;
         }
+        
+        // Vérifier si la traction est suffisante
+        float distance = Vector3.Distance(leftHandTransform.position, rightHandTransform.position);
+        if (distance < minDrawDistanceToShoot)
+        {
+            if (showDebugInfo)
+            {
+                Debug.Log($"⚠️ [BowController] Traction insuffisante: {distance:F2}m (min: {minDrawDistanceToShoot:F2}m)");
+            }
+            
+            // Détruire la flèche et annuler le tir
+            Destroy(currentArrow);
+            currentArrow = null;
+            isDrawing = false;
+            currentDrawAmount = 0f;
+            
+            // Réinitialiser la corde
+            if (bowString != null)
+            {
+                bowString.localPosition = initialStringPosition;
+            }
+            
+            if (bowRenderer != null)
+            {
+                bowRenderer.material.color = bowHeldColor;
+            }
+            return;
+        }
 
         // Détacher la flèche
         currentArrow.transform.SetParent(null);
@@ -310,16 +412,34 @@ public class BowController : MonoBehaviour
 
         rb.useGravity = true;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
+        
+        // Réduire la gravité pour une trajectoire plus droite
+        rb.linearDamping = 0f;
+        rb.angularDamping = 0.05f;
 
         // Calculer la force basée sur la traction
         float force = arrowForce * (1f + currentDrawAmount * forceMultiplier);
-        Vector3 shootDirection = arrowSpawnPoint.forward;
+        
+        // Calculer la direction de tir avec correction de rotation
+        Quaternion correctedRotation = arrowSpawnPoint.rotation * Quaternion.Euler(arrowRotationCorrection);
+        Vector3 shootDirection = correctedRotation * Vector3.forward;
 
         // Appliquer la force
         rb.linearVelocity = shootDirection * force;
 
-        // Ajouter une rotation
-        rb.angularVelocity = Random.insideUnitSphere * 2f;
+        // Ne pas ajouter de rotation aléatoire pour une trajectoire droite
+        rb.angularVelocity = Vector3.zero;
+        
+        // Ajouter le script pour suivre la vélocité
+        if (arrowFollowsVelocity)
+        {
+            ArrowVelocityFollow followScript = currentArrow.GetComponent<ArrowVelocityFollow>();
+            if (followScript == null)
+            {
+                followScript = currentArrow.AddComponent<ArrowVelocityFollow>();
+            }
+            followScript.gravityScale = gravityScale;
+        }
 
         // Son de tir
         if (audioSource != null && releaseArrowSound != null)

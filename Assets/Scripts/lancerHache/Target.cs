@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class Target : MonoBehaviour, IHealth
 {
+    [Header("Target ID")]
+    [Tooltip("Identifiant de la cible (1, 2, 3 ou 4)")]
+    public int targetId = 1;
+
     [Header("Visual")]
     [Tooltip("Renderer de la cible (pour changer la couleur)")]
     public Renderer targetRenderer;
@@ -21,6 +25,7 @@ public class Target : MonoBehaviour, IHealth
     public float emissionIntensity = 2f;
 
     private TargetGame gameManager;
+    private TargetSequenceManager sequenceManager;
     private bool hasBeenHit = false;
     private Material targetMaterial;
 
@@ -52,9 +57,17 @@ public class Target : MonoBehaviour, IHealth
     }
 
     /// <summary>
+    /// Enregistre le sequence manager
+    /// </summary>
+    public void SetSequenceManager(TargetSequenceManager manager)
+    {
+        sequenceManager = manager;
+    }
+
+    /// <summary>
     /// Met à jour l'apparence de la cible
     /// </summary>
-    void UpdateVisual(Color color)
+    public void UpdateVisual(Color color)
     {
         if (targetMaterial == null) return;
 
@@ -94,8 +107,48 @@ public class Target : MonoBehaviour, IHealth
         {
             gameManager.OnTargetHit(this);
         }
+        
+        // Notifier le sequence manager si présent
+        if (sequenceManager != null)
+        {
+            sequenceManager.OnTargetHit(this);
+        }
 
-        Debug.Log($"[Target] {gameObject.name} touchée ! Passage au vert.");
+        Debug.Log($"[Target] {gameObject.name} (ID: {targetId}) touchée ! Passage au vert.");
+    }
+
+    /// <summary>
+    /// Met à jour l'apparence de la cible (appelé par TargetSequenceManager)
+    /// </summary>
+    public void UpdateVisual(Color color, float emission)
+    {
+        if (targetMaterial == null) return;
+
+        targetMaterial.color = color;
+
+        // Activer l'émission (glow) si le matériau le supporte
+        if (targetMaterial.HasProperty("_EmissionColor"))
+        {
+            if (emission > 0f)
+            {
+                targetMaterial.EnableKeyword("_EMISSION");
+                targetMaterial.SetColor("_EmissionColor", color * emission);
+            }
+            else
+            {
+                targetMaterial.DisableKeyword("_EMISSION");
+                targetMaterial.SetColor("_EmissionColor", Color.black);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Réinitialise la cible (appelé par TargetSequenceManager)
+    /// </summary>
+    public void ResetTarget()
+    {
+        hasBeenHit = false;
+        UpdateVisual(initialColor, emissionIntensity);
     }
 
     void OnDestroy()
