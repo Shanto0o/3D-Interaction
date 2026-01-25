@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
 /// Active/désactive le fog quand le joueur entre/sort d'une zone trigger
@@ -20,6 +21,10 @@ public class FogTriggerZone : MonoBehaviour
     [Range(0f, 1f)]
     public float fogDensity = 0.01f;
 
+    [Header("Transition")]
+    [Tooltip("Vitesse de transition du fog (plus élevé = plus rapide)")]
+    public float transitionSpeed = 2f;
+
     [Header("Player Detection")]
     [Tooltip("Tag du joueur (par défaut 'Player')")]
     public string playerTag = "Player";
@@ -30,6 +35,7 @@ public class FogTriggerZone : MonoBehaviour
     private bool playerInZone = false;
     private float originalAmbientIntensity;
     private float originalReflectionIntensity;
+    private Coroutine currentTransition;
 
     private void Start()
     {
@@ -72,7 +78,8 @@ public class FogTriggerZone : MonoBehaviour
 
             if (enableFogOnEnter)
             {
-                ActivateFog();
+                if (currentTransition != null) StopCoroutine(currentTransition);
+                currentTransition = StartCoroutine(TransitionFog(true));
             }
 
             if (showDebugInfo)
@@ -91,7 +98,8 @@ public class FogTriggerZone : MonoBehaviour
 
             if (disableFogOnExit)
             {
-                DeactivateFog();
+                if (currentTransition != null) StopCoroutine(currentTransition);
+                currentTransition = StartCoroutine(TransitionFog(false));
             }
 
             if (showDebugInfo)
@@ -133,6 +141,51 @@ public class FogTriggerZone : MonoBehaviour
         if (showDebugInfo)
         {
             Debug.Log($"[FogTriggerZone] Fog désactivé, Ambient Intensity restaurée: {originalAmbientIntensity}, Reflection Intensity restaurée: {originalReflectionIntensity}");
+        }
+    }
+
+    private IEnumerator TransitionFog(bool enable)
+    {
+        if (enable)
+        {
+            // Activer le fog immédiatement mais avec des valeurs à 0
+            RenderSettings.fog = true;
+            RenderSettings.fogMode = fogMode;
+            RenderSettings.fogColor = fogColor;
+        }
+
+        float startDensity = RenderSettings.fogDensity;
+        float targetDensity = enable ? fogDensity : 0f;
+
+        float startAmbient = RenderSettings.ambientIntensity;
+        float targetAmbient = enable ? 0f : originalAmbientIntensity;
+
+        float startReflection = RenderSettings.reflectionIntensity;
+        float targetReflection = enable ? 0.1f : originalReflectionIntensity;
+
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * transitionSpeed;
+            t = Mathf.Clamp01(t);
+
+            RenderSettings.fogDensity = Mathf.Lerp(startDensity, targetDensity, t);
+            RenderSettings.ambientIntensity = Mathf.Lerp(startAmbient, targetAmbient, t);
+            RenderSettings.reflectionIntensity = Mathf.Lerp(startReflection, targetReflection, t);
+
+            yield return null;
+        }
+
+        // Désactiver complètement le fog si on sort de la zone
+        if (!enable)
+        {
+            RenderSettings.fog = false;
+        }
+
+        if (showDebugInfo)
+        {
+            Debug.Log($"[FogTriggerZone] Transition terminée - Fog: {(enable ? "activé" : "désactivé")}");
         }
     }
 

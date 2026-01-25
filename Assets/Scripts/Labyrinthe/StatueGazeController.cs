@@ -17,8 +17,11 @@ public class StatueGazeController : MonoBehaviour
     [Tooltip("The trigger collider (child of statue) used for detection. Leave empty to detect statue directly.")]
     public GameObject detectionTrigger;
     
-    [Tooltip("AudioSource to play when statue is moving")]
+    [Tooltip("AudioSource to play when statue is moving (not looking at it) and stop when statue is frozen (looking at it)")]
     public AudioSource statueAudioSource;
+    
+    [Tooltip("FogTriggerZone - La statue ne peut bouger que si le joueur est dans cette zone")]
+    public FogTriggerZone fogZone;
     
     [Header("Raycast Settings")]
     [Tooltip("Maximum distance for raycast detection")]
@@ -157,6 +160,20 @@ public class StatueGazeController : MonoBehaviour
                 }
             }
         }
+        
+        // Vérifier si le joueur est sorti de la zone pendant que la statue bouge
+        if (fogZone != null && aiPath.canMove && !fogZone.IsPlayerInZone())
+        {
+            aiPath.canMove = false;
+            
+            // Arrêter le son de déplacement
+            if (statueAudioSource != null && statueAudioSource.isPlaying)
+            {
+                statueAudioSource.Stop();
+            }
+            
+            Debug.Log($"Statue stopped - Player left the fog zone");
+        }
     }
     
     /// <summary>
@@ -185,15 +202,27 @@ public class StatueGazeController : MonoBehaviour
     {
         if (aiPath != null && !isLookingAtStatue)
         {
-            aiPath.canMove = true;
+            // Vérifier si le joueur est dans la zone de fog avant d'autoriser le mouvement
+            bool canMoveInZone = (fogZone == null || fogZone.IsPlayerInZone());
             
-            // Jouer le son de déplacement
-            if (statueAudioSource != null && !statueAudioSource.isPlaying)
+            if (canMoveInZone)
             {
-                statueAudioSource.Play();
+                aiPath.canMove = true;
+                
+                // Jouer le son de déplacement
+                if (statueAudioSource != null && !statueAudioSource.isPlaying)
+                {
+                    statueAudioSource.Play();
+                }
+                
+                Debug.Log($"Statue can move again! Player looked away from {statueObject.name}");
             }
-            
-            Debug.Log($"Statue can move again! Player looked away from {statueObject.name}");
+            else
+            {
+                // Le joueur n'est pas dans la zone, la statue reste immobile
+                aiPath.canMove = false;
+                Debug.Log($"Statue cannot move - Player is not in the fog zone");
+            }
         }
     }
     
