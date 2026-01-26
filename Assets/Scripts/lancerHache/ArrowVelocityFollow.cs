@@ -20,6 +20,7 @@ public class ArrowVelocityFollow : MonoBehaviour
         {
             // Appliquer une gravité réduite pour une trajectoire plus droite
             rb.useGravity = false; // On va gérer la gravité manuellement
+            rb.maxAngularVelocity = 0.1f; // limiter la rotation physique initiale
         }
     }
 
@@ -31,18 +32,61 @@ public class ArrowVelocityFollow : MonoBehaviour
         rb.AddForce(Physics.gravity * gravityScale, ForceMode.Acceleration);
 
         // Orienter la flèche dans la direction de son mouvement
-        if (rb.linearVelocity.magnitude > 0.1f)
+        Vector3 vel = rb.linearVelocity;
+        if (vel.sqrMagnitude > 0.01f)
         {
-            transform.rotation = Quaternion.LookRotation(rb.linearVelocity);
+            Quaternion target = Quaternion.LookRotation(vel.normalized, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.fixedDeltaTime * 10f);
         }
+
+        // Réduire la rotation physique résiduelle
+        rb.angularVelocity = Vector3.zero;
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        // Arrêter de suivre la vélocité après impact
+        if (hasHit) return;
         hasHit = true;
-        
-        // Désactiver ce script après la collision
+
+        // Récupérer le Rigidbody (au cas où)
+        if (rb == null) rb = GetComponent<Rigidbody>();
+
+        // Assurer qu'il y a un collider non trigger pour s'accrocher
+        Collider col = GetComponent<Collider>();
+        if (col == null)
+        {
+            // Ajouter un BoxCollider approximatif
+            BoxCollider bc = gameObject.AddComponent<BoxCollider>();
+            Renderer rend = GetComponentInChildren<Renderer>();
+            if (rend != null)
+            {
+                bc.size = rend.bounds.size;
+            }
+            col = bc;
+        }
+        if (col != null) col.isTrigger = false;
+
+        // Préserver la position de contact et orienter/attacher la flèche
+        ContactPoint contact = collision.contacts[0];
+        Vector3 contactPoint = contact.point;
+        Vector3 contactNormal = contact.normal;
+
+        // Positionner légèrement la flèche enfoncée dans la surface pour l'effet "planté"
+        transform.position = contactPoint - transform.forward * 0.02f;
+
+        // Rendre le rigidbody kinematic pour qu'il ne traverse plus rien
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
+        }
+
+        // Attacher la flèche à l'objet touché
+        transform.SetParent(collision.transform, true);
+
+        // Désactiver ce script
         this.enabled = false;
     }
 }

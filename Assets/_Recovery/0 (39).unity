@@ -4935,63 +4935,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd543225cb67e3649a9ff72bb9a5dbf3, type: 3}
---- !u!1 &540578152
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 540578154}
-  - component: {fileID: 540578153}
-  m_Layer: 0
-  m_Name: "fl\xE8che"
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &540578153
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 540578152}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a119da8fb2114f479bc3103baf6920d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ArrowTargetPractice
-  hand: {fileID: 1398512852}
-  arrowPrefab: {fileID: 1338684346}
-  voice: {fileID: 1724172885}
-  gestureType: 0
-  pinchFinger: 2
-  chargeTime: 3
-  launchForce: 15
-  openHandThreshold: 0.08
-  palmUpThreshold: 0.5
-  palmDownThreshold: -0.5
-  showChargingEffect: 1
-  maxChargeScale: 0.3
-  showDebugInfo: 0
---- !u!4 &540578154
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 540578152}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14.04431, y: 5.80402, z: -14.11248}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &542118307
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8663,6 +8606,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 932730275}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &936654117
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 936654118}
+  m_Layer: 0
+  m_Name: ArrowSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &936654118
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936654117}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.5609855, y: -0.43045932, z: -0.5609855, w: 0.4304593}
+  m_LocalPosition: {x: 0.62722015, y: 71.86578, z: 4.5620575}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1338684345}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -105}
 --- !u!1001 &938655806
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12904,10 +12878,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Arrow
       objectReference: {fileID: 0}
-    - target: {fileID: 1959729250425484, guid: 5187dfa4d8f19524e8bbf7c6894b7de7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4534147065827568, guid: 5187dfa4d8f19524e8bbf7c6894b7de7, type: 3}
       propertyPath: m_LocalPosition.x
       value: 17.69794
@@ -12950,8 +12920,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4534147065827568, guid: 5187dfa4d8f19524e8bbf7c6894b7de7, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 936654118}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1959729250425484, guid: 5187dfa4d8f19524e8bbf7c6894b7de7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1338684348}
     - targetCorrespondingSourceObject: {fileID: 1959729250425484, guid: 5187dfa4d8f19524e8bbf7c6894b7de7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1338684347}
@@ -12993,6 +12969,31 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1338684348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338684346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a119da8fb2114f479bc3103baf6920d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArrowTargetPractice
+  arrowPrefab: {fileID: 1338684346}
+  arrowSpawnPoint: {fileID: 936654118}
+  leftHand: {fileID: 1398512852}
+  rightHand: {fileID: 1495788884}
+  pinchThreshold: 0.7
+  useMiddleFingerPinch: 1
+  launchSpeed: 40
+  targetDistance: 6
+  targetHeight: 1.5
+  targetRadius: 0.5
+  targetMaterial: {fileID: 0}
+  targetHitMaterial: {fileID: 0}
+  spawnKey: 32
 --- !u!1001 &1349019349
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16853,17 +16854,20 @@ MonoBehaviour:
   leftHandTransform: {fileID: 0}
   rightHandTransform: {fileID: 0}
   bowString: {fileID: 2133529153}
-  arrowSpawnPoint: {fileID: 0}
+  arrowSpawnPoint: {fileID: 936654118}
   arrowPrefab: {fileID: 1338684346}
   pinchThreshold: 0.7
   useMiddleFingerPinch: 1
   maxDrawDistance: 0.5
   arrowForce: 5
   forceMultiplier: 2
+  straightShootSpeed: 80
+  forceStraightShot: 1
   bowRotationOffset: {x: 0, y: 270, z: 0}
   bowPositionOffset: {x: 0.25, y: 0, z: 0}
   arrowRotationCorrection: {x: 0, y: 0, z: 0}
   arrowPositionOffset: {x: 0, y: 0, z: 0}
+  placedArrow: {fileID: 0}
   arrowFollowsHand: 1
   minDrawDistanceToShoot: 0.1
   arrowLength: 0.5
@@ -16885,6 +16889,7 @@ MonoBehaviour:
   showTrajectoryPreview: 1
   showArrowTrail: 1
   aimLineLength: 10
+  trajectoryTarget: {fileID: 650749273}
   aimLineColor: {r: 1, g: 0, b: 0, a: 1}
   useArcTrajectory: 1
   launchAngleDegrees: 45
@@ -19949,4 +19954,3 @@ SceneRoots:
   - {fileID: 2055938610}
   - {fileID: 1119441209}
   - {fileID: 157782108}
-  - {fileID: 540578154}
