@@ -21,9 +21,6 @@ public class TriangleLaser : MonoBehaviour
     public float laserDistance = 10f;
     public float laserWidth = 0.05f;
     public LayerMask laserHitLayers = ~0;
-    
-    [Tooltip("Rotation offset à appliquer au prefab laser (en degrés Euler)")]
-    public Vector3 laserRotationOffset = Vector3.zero;
 
     [Header("Triangle Detection")]
     [Range(0.01f, 0.15f)]
@@ -263,8 +260,8 @@ public class TriangleLaser : MonoBehaviour
             // Direction depuis le centre des mains vers le centre des index
             Vector3 laserDirection = (indexCenter - handsCenter).normalized;
 
-            // Appliquer la rotation avec l'offset configuré
-            laserObject.transform.rotation = Quaternion.LookRotation(laserDirection) * Quaternion.Euler(laserRotationOffset);
+            // Appliquer la rotation avec correction de 180° sur Y (prefab orienté dans le mauvais sens)
+            laserObject.transform.rotation = Quaternion.LookRotation(laserDirection);
         }
 
         // Mettre à jour le faisceau laser (raycast pour détecter les collisions)
@@ -323,8 +320,8 @@ public class TriangleLaser : MonoBehaviour
         if (laserObject != null)
         {
             laserObject.transform.position = laserStart;
-            // Appliquer la rotation avec l'offset configuré
-            laserObject.transform.rotation = Quaternion.LookRotation(laserDir) * Quaternion.Euler(laserRotationOffset);
+            // Appliquer la rotation avec correction de 180° sur Y (prefab orienté dans le mauvais sens)
+            laserObject.transform.rotation = Quaternion.LookRotation(laserDir);
         }
 
         // Calculer le point final du laser avec raycast
