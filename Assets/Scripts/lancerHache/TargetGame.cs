@@ -38,6 +38,10 @@ public class TargetGame : MonoBehaviour
     [Header("UI")]
     [Tooltip("Afficher le score à l'écran")]
     public bool showScore = true;
+    
+    [Header("Door Control")]
+    [Tooltip("Porte à ouvrir quand le joueur gagne")]
+    public DoorController doorToOpen;
 
     [Header("Debug")]
     public bool showDebugInfo = true;
@@ -171,6 +175,14 @@ public class TargetGame : MonoBehaviour
         // Son de victoire
         if (audioSource != null && winSound != null)
             audioSource.PlayOneShot(winSound);
+
+        // Ouvrir la porte
+        if (doorToOpen != null)
+        {
+            doorToOpen.OpenDoor();
+            if (showDebugInfo)
+                Debug.Log("[TargetGame] Porte ouverte !");
+        }
 
         // Réinitialiser et recommencer
         consecutiveHits = 0;

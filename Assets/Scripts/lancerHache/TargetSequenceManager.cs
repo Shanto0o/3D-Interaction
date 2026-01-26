@@ -45,6 +45,13 @@ public class TargetSequenceManager : MonoBehaviour
     
     [Tooltip("Intensité d'émission pour les cibles réussies")]
     public float emissionIntensity = 2f;
+    
+    [Header("Door Control")]
+    [Tooltip("Porte à ouvrir quand la séquence est complète")]
+    public DoorController doorToOpen;
+    
+    [Tooltip("Script de lancer de flèches à désactiver après la séquence")]
+    public ArrowTargetPractice arrowScript;
 
     [Header("Debug")]
     public bool showDebugInfo = true;
@@ -182,6 +189,22 @@ public class TargetSequenceManager : MonoBehaviour
         // Son de victoire
         if (audioSource != null && bravoSound != null)
             audioSource.PlayOneShot(bravoSound);
+
+        // Ouvrir la porte
+        if (doorToOpen != null)
+        {
+            doorToOpen.OpenDoor();
+            if (showDebugInfo)
+                Debug.Log("[TargetSequenceManager] Porte ouverte !");
+        }
+
+        // Désactiver le script de lancer de flèches
+        if (arrowScript != null)
+        {
+            arrowScript.enabled = false;
+            if (showDebugInfo)
+                Debug.Log("[TargetSequenceManager] Script ArrowTargetPractice désactivé !");
+        }
 
         // Afficher l'animation Bravo
         if (bravoObject != null && !isShowingBravo)

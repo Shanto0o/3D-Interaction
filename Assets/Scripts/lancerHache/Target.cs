@@ -151,6 +151,32 @@ public class Target : MonoBehaviour, IHealth
         UpdateVisual(initialColor, emissionIntensity);
     }
 
+    /// <summary>
+    /// Détecte la collision avec les flèches
+    /// </summary>
+    void OnCollisionEnter(Collision collision)
+    {
+        // Vérifier si l'objet qui nous touche a le tag "Arrow"
+        if (collision.gameObject.CompareTag("Arrow"))
+        {
+            Debug.Log($"[Target] Flèche détectée sur {gameObject.name}");
+            TakeDamage(1f);
+        }
+    }
+
+    /// <summary>
+    /// Alternative avec trigger (au cas où la flèche utilise un trigger collider)
+    /// </summary>
+    void OnTriggerEnter(Collider other)
+    {
+        // Vérifier si l'objet qui nous touche a le tag "Arrow"
+        if (other.CompareTag("Arrow"))
+        {
+            Debug.Log($"[Target] Flèche détectée (trigger) sur {gameObject.name}");
+            TakeDamage(1f);
+        }
+    }
+
     void OnDestroy()
     {
         // Nettoyer le matériau
