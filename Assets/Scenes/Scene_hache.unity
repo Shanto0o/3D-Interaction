@@ -388,62 +388,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8408384421787346338, guid: 587911d8e2e27694daaec695bc48f418, type: 3}
   m_PrefabInstance: {fileID: 44930810}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &47080592
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 47080594}
-  - component: {fileID: 47080593}
-  m_Layer: 0
-  m_Name: boule_feu
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &47080593
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 47080592}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcb102c199f3ed14187e2060994a998e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BouleDeFeu
-  hand: {fileID: 1398512852}
-  fireBallPrefab: {fileID: 2972392977303283611, guid: 11c9a5d587e034e43a68d4ebfb901206, type: 3}
-  voice: {fileID: 1222226988}
-  gestureType: 1
-  chargeTime: 3
-  launchForce: 15
-  openHandThreshold: 0.08
-  palmUpThreshold: 0.5
-  palmDownThreshold: -0.5
-  showChargingEffect: 1
-  maxChargeScale: 0.3
-  showDebugInfo: 0
---- !u!4 &47080594
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 47080592}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.9122567, y: 1.2174767, z: -3.54}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &99488604
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8405,7 +8349,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1222226988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10749,64 +10693,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9122802f90381f84d8b8a93daaf9717a, type: 3}
---- !u!1 &1490212531
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1490212533}
-  - component: {fileID: 1490212532}
-  m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1490212532
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490212531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01af34ba27597824da090e0966589f35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TargetGame
-  targets:
-  - {fileID: 825832077}
-  - {fileID: 913044045}
-  - {fileID: 1411562545}
-  - {fileID: 1419458759}
-  requiredHits: 1
-  correctTargetColor: {r: 0, g: 1, b: 0, a: 1}
-  wrongTargetColor: {r: 1, g: 0, b: 0, a: 1}
-  emissionIntensity: 2
-  correctHitSound: {fileID: 0}
-  wrongHitSound: {fileID: 0}
-  winSound: {fileID: 0}
-  showScore: 1
-  showDebugInfo: 1
---- !u!4 &1490212533
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1490212531}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.0755, y: 7.68447, z: -14.11249}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1495788877
 GameObject:
   m_ObjectHideFlags: 0
@@ -15047,8 +14933,6 @@ SceneRoots:
   - {fileID: 563215546}
   - {fileID: 963678878}
   - {fileID: 468170917}
-  - {fileID: 47080594}
-  - {fileID: 1490212533}
   - {fileID: 1925530610}
   - {fileID: 926386882}
   - {fileID: 2141075097}

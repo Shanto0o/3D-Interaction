@@ -420,8 +420,11 @@ public class StatuePlayerCatcher : MonoBehaviour
             yield return null;
         }
         
-        // Phase 2: Attendre un court instant (écran noir)
-        yield return new WaitForSeconds(1.5f);
+        // Phase 2: Attendre le teleportDelay configuré (écran noir)
+        if (teleportDelay > 0f)
+        {
+            yield return new WaitForSeconds(teleportDelay);
+        }
         
         // Phase 3: Téléporter le joueur
         ExecuteTeleport();
