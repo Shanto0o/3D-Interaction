@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Projet_Interaction3D
+  productName: Projet_Interaction3D_Finale
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -147,6 +147,9 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: 11400000, guid: 67fe8ff57a8f190448c45bd427782399, type: 2}
   - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  - {fileID: 11400000, guid: 435ff1d10763fb14c9cdbb52f47928ef, type: 2}
+  - {fileID: 7598367172550418010, guid: 61bf6ae215ddcf94ea6f2b01ba29775f, type: 2}
+  - {fileID: -5481953449621921452, guid: d8a1d94009e058246963573660e5da4c, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1

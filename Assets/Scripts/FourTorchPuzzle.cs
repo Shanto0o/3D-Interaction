@@ -15,6 +15,9 @@ public class FourTorchPuzzle : MonoBehaviour
     
     [Tooltip("Le nom du trigger d'animation à activer (ex: 'open')")]
     public string animationTriggerName = "Open";
+    
+    [Tooltip("Script de lancer de flèches à activer après la résolution du puzzle")]
+    public ArrowTargetPractice arrowScript;
 
     [Header("Debug")]
     public bool showDebugInfo = false;
@@ -93,6 +96,17 @@ public class FourTorchPuzzle : MonoBehaviour
         else
         {
             Debug.LogWarning($"[FourTorchPuzzle] Impossible de déclencher l'animation - Animator non assigné!");
+        }
+        
+        // Activer le script de lancer de flèches
+        if (arrowScript != null)
+        {
+            arrowScript.enabled = true;
+            
+            if (showDebugInfo)
+            {
+                Debug.Log($"[FourTorchPuzzle] Script ArrowTargetPractice activé!");
+            }
         }
     }
 

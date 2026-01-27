@@ -49,6 +49,8 @@ public class ShieldSpell : MonoBehaviour
     private bool isVoiceActive = false;
     private float voiceCooldown = 0f;
     private const float VOICE_COOLDOWN_TIME = 0.5f;
+    private float voiceActiveTimer = 0f;
+    private const float MAX_VOICE_DURATION = 10f; // Timeout de 10 secondes
     private float spellCooldown = 0f;
     private AudioSource audioSource;
     
@@ -121,6 +123,23 @@ public class ShieldSpell : MonoBehaviour
             {
                 voice.Activate();
                 isVoiceActive = true;
+                voiceActiveTimer = 0f;
+            }
+            
+            // Désactiver automatiquement après le timeout
+            if (isVoiceActive)
+            {
+                voiceActiveTimer += Time.deltaTime;
+                if (voiceActiveTimer >= MAX_VOICE_DURATION)
+                {
+                    voice.Deactivate();
+                    isVoiceActive = false;
+                    voiceCooldown = VOICE_COOLDOWN_TIME;
+                    if (showDebugInfo)
+                    {
+                        Debug.Log("⏱️ Voice deactivated - timeout reached");
+                    }
+                }
             }
         }
         

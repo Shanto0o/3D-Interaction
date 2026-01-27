@@ -58,6 +58,8 @@ public class BouleDeFeu : MonoBehaviour
     private bool isVoiceActive = false;
     private float voiceCooldown = 0f;
     private const float VOICE_COOLDOWN_TIME = 1f;
+    private float voiceActiveTimer = 0f;
+    private const float MAX_VOICE_DURATION = 10f; // Timeout de 10 secondes
 
 
     void Start()
@@ -94,9 +96,26 @@ public class BouleDeFeu : MonoBehaviour
             {
                 voice.Activate();
                 isVoiceActive = true;
+                voiceActiveTimer = 0f;
                 if (showDebugInfo)
                 {
                     Debug.Log("Voice activated - listening...");
+                }
+            }
+            
+            // Désactiver automatiquement après le timeout
+            if (isVoiceActive)
+            {
+                voiceActiveTimer += Time.deltaTime;
+                if (voiceActiveTimer >= MAX_VOICE_DURATION)
+                {
+                    voice.Deactivate();
+                    isVoiceActive = false;
+                    voiceCooldown = VOICE_COOLDOWN_TIME;
+                    if (showDebugInfo)
+                    {
+                        Debug.Log("Voice deactivated - timeout reached");
+                    }
                 }
             }
         }
